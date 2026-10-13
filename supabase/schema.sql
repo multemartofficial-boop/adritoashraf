@@ -397,8 +397,8 @@ insert into public.about_me
 select
   1,
   '{"accent":"Hi, I''m Adrito,","strong":"A Full Stack Developer","muted":"Who Builds Real Products."}'::jsonb,
-  'I design and build complete web products — from the database to the interface. I work with clients who need something that actually ships: fast websites, SaaS platforms and internal business tools.',
-  'Every project starts with understanding the business, then I handle design, development, deployment and support. You get one person responsible for the whole thing.',
+  'I''m Adrito, a full stack developer who builds websites, SaaS products and business software for real businesses. I work with a modern AI-assisted workflow: I plan the architecture, direct AI tools, review and test every piece, and ship production-ready systems.',
+  'This lets me deliver in weeks what usually takes months, without cutting corners on quality. Every project comes with full source code, clear handover, and support after launch.',
   '4+',
   '4+ Years Experience',
   '/uploads/profile.webp'
@@ -812,7 +812,7 @@ insert into public.site_settings (
   'Adrito',
   'Adrito Ashraf',
   'Full Stack Developer',
-  'I build fast websites, SaaS products and business software that teams actually enjoy using.',
+  'Building websites, web apps and business software with a modern AI-assisted workflow — faster delivery, clean code, real results.',
   'I Am Adrito Ashraf',
   'FULL STACK',
   'DEVELOPER',
@@ -950,7 +950,8 @@ from (values
   ('How much does a project cost?', 'Each service shows a starting price. The final price depends on scope, which we agree on before any work starts.', 2),
   ('How long does a project take?', 'A website usually takes 2 to 4 weeks. SaaS and ERP systems take longer. You get a timeline in the proposal.', 3),
   ('Do I get the source code?', 'Yes. You receive the full source code, deployment access and documentation at handover.', 4),
-  ('What happens in the meeting?', 'I first understand your project, then explain a solution and timeline, and finally discuss pricing.', 5)
+  ('What happens in the meeting?', 'I first understand your project, then explain a solution and timeline, and finally discuss pricing.', 5),
+  ('Do you use AI tools while building?', 'Yes. I use AI coding agents to speed up development, but I own the planning, architecture, testing and delivery. You get faster turnaround, a tested product, and full source code — and I''m accountable for the result.', 6)
 ) as v(question, answer, sort_order)
 where not exists (select 1 from public.faqs);
 
