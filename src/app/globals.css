@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Public site: "Framora" reference (near-black / violet / lavender / orange / peach).
+   Admin: frosted light dashboard reference.
+--------------------------------------------------------------------------- */
+:root {
+  /* Public palette */
+  --ink: #0b0b12;
+  --violet: #7b4fff;
+  --lavender: #c9b6ff;
+  --orange: #f26b3a;
+  --peach: #f7b6a0;
+  --pink: #f4a6c8;
+  --paper: #ffffff;
+  --muted: #9a9aa8;
+
+  /* Admin palette */
+  --admin-bg: #eef1f5;
+  --admin-panel: rgb(255 255 255 / 0.72);
+  --admin-border: rgb(15 23 42 / 0.08);
+  --admin-text: #0f172a;
+  --admin-muted: #64748b;
+  --admin-success: #16a34a;
+  --admin-info: #3b82f6;
+  --admin-warning: #f59e0b;
+  --admin-danger: #e11d48;
+  --admin-idle: #94a3b8;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-violet: var(--violet);
+  --color-lavender: var(--lavender);
+  --color-orange: var(--orange);
+  --color-peach: var(--peach);
+  --color-pink: var(--pink);
+  --color-paper: var(--paper);
+  --color-muted: var(--muted);
+
+  --color-admin-bg: var(--admin-bg);
+  --color-admin-panel: var(--admin-panel);
+  --color-admin-border: var(--admin-border);
+  --color-admin-text: var(--admin-text);
+  --color-admin-muted: var(--admin-muted);
+  --color-admin-success: var(--admin-success);
+  --color-admin-info: var(--admin-info);
+  --color-admin-warning: var(--admin-warning);
+  --color-admin-danger: var(--admin-danger);
+  --color-admin-idle: var(--admin-idle);
+
+  --font-sans: var(--font-manrope);
+  --font-serif: var(--font-instrument-serif);
+  --font-admin: var(--font-inter);
+
+  --radius-card: 1.75rem;
+  --radius-panel: 0.875rem;
+
+  --shadow-glow-violet: 0 0 0 1px rgb(123 79 255 / 0.45), 0 0 24px rgb(123 79 255 / 0.35);
+  --shadow-panel: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.05);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---------------------------------------------------------------------------
+   Public site utilities (Framora reference)
+--------------------------------------------------------------------------- */
+
+/* Full-width sections; content aligned with padding only (max ~1440px of content). */
+@utility section-x {
+  padding-inline: max(1.25rem, calc((100% - 1440px) / 2));
+  @media (width >= 48rem) {
+    padding-inline: max(2.5rem, calc((100% - 1440px) / 2));
+  }
+}
+
+@utility tag-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.375rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(var(--tag-bg, #fff), var(--tag-bg, #fff)) padding-box,
+    linear-gradient(90deg, var(--orange), var(--violet)) border-box;
+}
+
+@utility text-gradient-lavender {
+  background-image: linear-gradient(90deg, #e9e0ff 0%, var(--lavender) 35%, var(--violet) 100%);
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-peach {
+  background-image: linear-gradient(90deg, #ffffff 0%, #fff1ea 55%, var(--peach) 100%);
+  background-clip: text;
+  color: transparent;
+}
+
+@utility bg-cta {
+  background-image: linear-gradient(90deg, var(--violet) 0%, #b44cff 50%, var(--pink) 100%);
+}
+
+@utility bg-orange-pill {
+  background-image: linear-gradient(90deg, var(--orange) 0%, #f98a6b 50%, var(--pink) 100%);
+}
+
+@utility glass {
+  background-color: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  backdrop-filter: blur(16px);
+}
+
+/* Public form controls (booking flow): light, rounded, violet focus ring. */
+@utility field-public {
+  width: 100%;
+  min-width: 0;
+  border-radius: 0.875rem;
+  border: 1px solid rgb(0 0 0 / 0.12);
+  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+  &::placeholder {
+    color: rgb(0 0 0 / 0.38);
+  }
+  &:focus-visible {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px rgb(123 79 255 / 0.2);
+  }
+  &[aria-invalid="true"] {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 0.15);
+  }
+}
+
+/* Holographic wavy background used on cards (lavender / pink / sky). */
+@utility bg-holo {
+  background:
+    repeating-radial-gradient(circle at 120% 120%, rgb(255 255 255 / 0.35) 0 2px, transparent 2px 14px),
+    radial-gradient(60% 80% at 10% 10%, #c8d8ff 0%, transparent 60%),
+    radial-gradient(60% 80% at 90% 30%, #f6c6e4 0%, transparent 60%),
+    radial-gradient(80% 90% at 50% 100%, #d9c9ff 0%, transparent 70%),
+    #efe9ff;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Radix accordion height animation (content stays mounted while closing). */
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@utility animate-marquee {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+
+@utility animate-reveal {
+  animation: reveal-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-accordion-down {
+  animation: accordion-down 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@utility animate-accordion-up {
+  animation: accordion-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Sections/cards glide up as they enter the viewport. Without scroll-driven
+   animation support it plays once on load, which looks identical for content
+   already on screen. */
+@utility scroll-reveal {
+  animation: reveal-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@supports (animation-timeline: view()) {
+  .scroll-reveal {
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+/* Subtle hover lift for public cards. */
+@utility card-lift {
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms;
+  &:hover {
+    transform: translateY(-6px);
+  }
+}
+
+@utility mask-fade-x {
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
