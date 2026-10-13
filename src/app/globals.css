@@ -69,6 +69,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: clip; /* decorative marquee/glows must never open horizontal scroll */
 }
 
 :focus-visible {
@@ -76,8 +77,14 @@ body {
   outline-offset: 2px;
 }
 
+/* Anchored sections land below the fixed pill header instead of under it. */
+[id] {
+  scroll-margin-top: 5.5rem;
+}
+
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 /* ---------------------------------------------------------------------------

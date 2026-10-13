@@ -34,20 +34,20 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
           <p className="animate-reveal font-serif text-[clamp(1.75rem,3.4vw,3.25rem)] leading-none italic">{s.hero_intro}</p>
           <h1 className="mt-3 font-extrabold tracking-tight uppercase">
             <span
-              className="animate-reveal text-gradient-lavender block text-[clamp(3.2rem,9.5vw,9.5rem)] leading-[0.92]"
+              className="animate-reveal text-gradient-lavender block text-[clamp(1.8rem,9vw,9.5rem)] leading-[0.92]"
               style={{ animationDelay: "120ms" }}
             >
               {s.hero_line_1}
             </span>
-            <span className="animate-reveal mt-2 flex items-center gap-3 md:gap-5" style={{ animationDelay: "240ms" }}>
+            <span className="animate-reveal mt-2 flex items-center gap-2 sm:gap-3 md:gap-5" style={{ animationDelay: "240ms" }}>
               <a
                 href="#about"
                 aria-label="Scroll to the About section"
-                className="bg-orange-pill group/pill inline-grid h-[clamp(2.6rem,6.5vw,6.5rem)] w-[clamp(5rem,13vw,13rem)] shrink-0 place-items-center rounded-full shadow-[0_10px_40px_rgb(242_107_58/0.35)] transition-all duration-300 ease-out hover:scale-[1.06] hover:shadow-[0_14px_50px_rgb(244_166_200/0.5)] focus-visible:outline-2 focus-visible:outline-white active:scale-95"
+                className="bg-orange-pill group/pill inline-grid h-[clamp(2rem,5.5vw,6.5rem)] w-[clamp(3.4rem,11vw,13rem)] shrink-0 place-items-center rounded-full shadow-[0_10px_40px_rgb(242_107_58/0.35)] transition-all duration-300 ease-out hover:scale-[1.06] hover:shadow-[0_14px_50px_rgb(244_166_200/0.5)] focus-visible:outline-2 focus-visible:outline-white active:scale-95"
               >
                 <ArrowRight className="size-[45%] stroke-[2.5] transition-transform duration-300 ease-out group-hover/pill:translate-x-1" />
               </a>
-              <span className="text-gradient-peach text-[clamp(3.2rem,9.5vw,9.5rem)] leading-[0.92]">{s.hero_line_2}</span>
+              <span className="text-gradient-peach min-w-0 text-[clamp(1.8rem,9vw,9.5rem)] leading-[0.92]">{s.hero_line_2}</span>
             </span>
           </h1>
           {s.tagline && (

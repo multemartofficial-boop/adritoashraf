@@ -14,7 +14,7 @@ export function Portfolio({ projects, text }: { projects: ProjectCard[]; text?: 
     <section id="portfolio" aria-label={word} className="relative isolate overflow-clip bg-black pb-24 text-white md:pb-32">
       <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-[70vh] bg-[radial-gradient(70%_60%_at_50%_0%,rgb(242_107_58/0.55),transparent_70%)]" />
 
-      <h2 className="section-x pt-20 text-center text-[clamp(4rem,17vw,17rem)] leading-[0.8] font-extrabold tracking-tighter uppercase select-none md:pt-28">
+      <h2 className="section-x pt-20 text-center text-[clamp(2.5rem,13vw,17rem)] leading-[0.8] font-extrabold tracking-tighter uppercase select-none md:pt-28">
         {word}
       </h2>
       {text?.description && <p className="section-x mt-4 text-center text-white/60">{text.description}</p>}
