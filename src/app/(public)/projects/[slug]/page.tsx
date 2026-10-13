@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarClock, Check, Clock, UserRound } from "lucide-react";
 import { getProjectBySlug, getProjects, getSiteSettings } from "@/lib/data/public";
+import { publicEnv } from "@/lib/env/public";
+import { JsonLd } from "@/components/site/json-ld";
 import { CARD_THEMES } from "@/components/site/card-themes";
 import { cn } from "@/lib/utils";
 import { Gallery } from "./gallery";
@@ -19,12 +21,17 @@ export async function generateMetadata({ params }: PageProps<"/projects/[slug]">
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return { title: "Project not found" };
-  const title = `${project.title} ${project.title_accent}`.trim();
+  const title = project.seo_title || `${project.title} ${project.title_accent}`.trim();
+  const description = project.seo_description || project.short_description;
+  const ogImage = project.og_image || project.cover_image;
   return {
     title,
-    description: project.short_description,
-    alternates: { canonical: `/projects/${project.slug}` },
-    openGraph: { title, description: project.short_description, images: project.cover_image ? [project.cover_image] : undefined },
+    description,
+    keywords: project.focus_keyword ? [project.focus_keyword, ...project.tags] : project.tags,
+    alternates: { canonical: project.canonical_url || `/projects/${project.slug}` },
+    robots: project.noindex ? { index: false, follow: false } : undefined,
+    openGraph: { title, description, type: "article", images: ogImage ? [ogImage] : undefined },
+    twitter: { card: "summary_large_image", title, description, images: ogImage ? [ogImage] : undefined },
   };
 }
 
@@ -41,8 +48,34 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
     project.duration && { icon: Clock, label: "Duration", value: project.duration },
   ].filter(Boolean) as { icon: typeof Clock; label: string; value: string }[];
 
+  const base = publicEnv.NEXT_PUBLIC_SITE_URL;
+  const projectUrl = `${base}/projects/${project.slug}`;
+
   return (
     <article className="bg-white text-ink">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: base },
+            { "@type": "ListItem", position: 2, name: "Portfolio", item: `${base}/#portfolio` },
+            { "@type": "ListItem", position: 3, name: `${project.title} ${project.title_accent}`.trim(), item: projectUrl },
+          ],
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CreativeWork",
+          name: `${project.title} ${project.title_accent}`.trim(),
+          url: projectUrl,
+          description: project.seo_description || project.short_description || undefined,
+          image: project.og_image || project.cover_image || undefined,
+          keywords: project.tags.length ? project.tags.join(", ") : undefined,
+          creator: { "@type": "Person", name: settings.owner_name, url: base },
+        }}
+      />
       <header className="section-x relative isolate overflow-hidden bg-black pt-36 pb-16 text-white md:pt-44 md:pb-24">
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(60%_70%_at_50%_0%,rgb(242_107_58/0.45),transparent_70%)]" />
         <Link href="/#portfolio" className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white">
@@ -76,7 +109,14 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
       <div className="section-x -mt-px bg-black pb-16">
         <div className={cn("relative aspect-[16/9] overflow-hidden rounded-[2rem]", theme.bg)}>
           {project.cover_image ? (
-            <Image src={project.cover_image} alt={`${project.title} cover`} fill priority sizes="100vw" className="object-cover" />
+            <Image
+              src={project.cover_image}
+              alt={project.cover_image_alt || `${project.title} cover`}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
           ) : (
             <span className="absolute inset-0 grid place-items-center text-[clamp(2rem,6vw,5rem)] font-light tracking-[0.3em] uppercase opacity-70">
               {project.title}

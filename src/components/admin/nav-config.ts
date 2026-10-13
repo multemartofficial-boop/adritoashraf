@@ -1,4 +1,5 @@
 import {
+  ArrowRightLeft,
   BarChart3,
   Briefcase,
   CalendarCheck,
@@ -46,6 +47,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "System",
     items: [
       { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { label: "Redirects", href: "/admin/redirects", icon: ArrowRightLeft },
       { label: "Media Library", href: "/admin/media", icon: Images },
       { label: "Account & Security", href: "/admin/account", icon: ShieldCheck },
     ],

@@ -194,6 +194,21 @@ export function SettingsForm({ settings: s }: { settings: SiteSettingsRow }) {
         <Field label="Social share image" htmlFor="og_image" error={e.og_image} hint="1200 × 630 recommended." className="md:col-span-2">
           <ImageField name="og_image" folder="site" defaultValue={s.og_image} error={e.og_image} />
         </Field>
+        <Field label="Focus keyword" htmlFor="seo_focus_keyword" error={e.seo_focus_keyword} hint="Main search term for the home page, e.g. “freelance full stack developer”.">
+          <Input {...errProps("seo_focus_keyword", e.seo_focus_keyword)} defaultValue={s.seo_focus_keyword} />
+        </Field>
+        <Field label="GA4 Measurement ID" htmlFor="ga4_id" error={e.ga4_id} hint="Google Analytics, e.g. G-XXXXXXXXXX. Empty = analytics off.">
+          <Input {...errProps("ga4_id", e.ga4_id)} defaultValue={s.ga4_id} placeholder="G-" />
+        </Field>
+        <Field
+          label="Search Console verification"
+          htmlFor="search_console_verification"
+          error={e.search_console_verification}
+          hint="The token from Google's meta tag (the long string after content=), or the full content value."
+          className="md:col-span-2"
+        >
+          <Input {...errProps("search_console_verification", e.search_console_verification)} defaultValue={s.search_console_verification} />
+        </Field>
       </FormSection>
 
       <FormActions pending={pending} label="Save settings" />

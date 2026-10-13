@@ -8,6 +8,7 @@ import { BookingFlow } from "@/components/booking/booking-flow";
 export const metadata: Metadata = {
   title: "Book a meeting",
   description: "Describe your project and pick a time for a free 15-30 minute call.",
+  alternates: { canonical: "/book" },
 };
 
 const POINTS = [

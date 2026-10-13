@@ -1,4 +1,5 @@
 import { getFaqs, getProcessSteps, getProjects, getServices, getSiteSettings, getTestimonials } from "@/lib/data/public";
+import { JsonLd } from "@/components/site/json-ld";
 import { About } from "@/components/sections/about";
 import { BookingCta } from "@/components/sections/booking-cta";
 import { Faq } from "@/components/sections/faq";
@@ -25,6 +26,19 @@ export default async function HomePage() {
 
   return (
     <>
+      {faqs.length > 0 && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({
+              "@type": "Question",
+              name: f.question,
+              acceptedAnswer: { "@type": "Answer", text: f.answer },
+            })),
+          }}
+        />
+      )}
       <Hero settings={settings} />
       <About settings={settings} featured={featured} />
       <Portfolio projects={projects} text={t.portfolio} />

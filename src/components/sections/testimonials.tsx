@@ -21,7 +21,7 @@ function Stars({ rating }: { rating: number }) {
 function Avatar({ t }: { t: TestimonialRow }) {
   return (
     <span className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-violet to-orange font-semibold text-white">
-      {t.avatar_url ? <Image src={t.avatar_url} alt="" fill sizes="44px" className="object-cover" /> : t.client_name.charAt(0)}
+      {t.avatar_url ? <Image src={t.avatar_url} alt={t.client_name} fill sizes="44px" className="object-cover" /> : t.client_name.charAt(0)}
     </span>
   );
 }

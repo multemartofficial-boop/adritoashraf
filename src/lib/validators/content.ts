@@ -74,6 +74,13 @@ export const projectSchema = z.object({
   live_url: optionalUrl,
   cover_image: imageUrl,
   card_theme: z.enum(CARD_THEMES),
+  seo_title: text(70),
+  seo_description: text(170),
+  focus_keyword: text(80),
+  og_image: imageUrl,
+  cover_image_alt: text(140),
+  canonical_url: optionalUrl,
+  noindex: z.boolean(),
   is_published: z.boolean(),
 });
 export type ProjectInput = z.infer<typeof projectSchema>;
@@ -94,6 +101,13 @@ export const parseProjectForm = (fd: FormData) =>
     live_url: fdString(fd, "live_url").trim(),
     cover_image: fdString(fd, "cover_image"),
     card_theme: fdString(fd, "card_theme") || "sky",
+    seo_title: fdString(fd, "seo_title"),
+    seo_description: fdString(fd, "seo_description"),
+    focus_keyword: fdString(fd, "focus_keyword"),
+    og_image: fdString(fd, "og_image"),
+    cover_image_alt: fdString(fd, "cover_image_alt"),
+    canonical_url: fdString(fd, "canonical_url").trim(),
+    noindex: fdBool(fd, "noindex"),
     is_published: fdBool(fd, "is_published"),
   });
 
@@ -254,7 +268,10 @@ export const siteSettingsSchema = z.object({
   footer_text: text(400),
   seo_title: text(70),
   seo_description: text(170),
+  seo_focus_keyword: text(80),
   og_image: imageUrl,
+  ga4_id: z.string().trim().max(30).regex(/^$|^G-[A-Z0-9]+$/i, "Enter a Measurement ID like G-XXXXXXXXXX."),
+  search_console_verification: text(120),
   default_currency: z.enum(["USD", "BDT"]),
   section_texts: z.object(Object.fromEntries(SECTION_KEYS.map((k) => [k, sectionTextSchema])) as Record<
     (typeof SECTION_KEYS)[number],
@@ -291,7 +308,10 @@ export const parseSiteSettingsForm = (fd: FormData) =>
     footer_text: fdString(fd, "footer_text"),
     seo_title: fdString(fd, "seo_title"),
     seo_description: fdString(fd, "seo_description"),
+    seo_focus_keyword: fdString(fd, "seo_focus_keyword"),
     og_image: fdString(fd, "og_image"),
+    ga4_id: fdString(fd, "ga4_id").trim(),
+    search_console_verification: fdString(fd, "search_console_verification").trim(),
     default_currency: fdString(fd, "default_currency") || "USD",
     section_texts: Object.fromEntries(
       SECTION_KEYS.map((k) => [
@@ -306,6 +326,31 @@ export const parseSiteSettingsForm = (fd: FormData) =>
       ]),
     ),
   });
+
+// ---------------------------------------------------------------------------
+// 301 redirects
+// ---------------------------------------------------------------------------
+export const redirectSchema = z
+  .object({
+    from_path: z
+      .string()
+      .trim()
+      .min(2, "Enter a path like /old-page.")
+      .max(300)
+      .regex(/^\/[^?#\s]*$/, "Use a path starting with / (no query string)."),
+    to_path: z
+      .string()
+      .trim()
+      .min(1, "Destination is required.")
+      .max(500)
+      .refine((v) => /^\/\S*$/.test(v) || /^https?:\/\/\S+$/.test(v), {
+        message: "Use a /path or a full https:// URL.",
+      }),
+  })
+  .refine((v) => v.from_path !== v.to_path, { path: ["to_path"], message: "Destination can't be the same as the source." });
+
+export const parseRedirectForm = (fd: FormData) =>
+  redirectSchema.safeParse({ from_path: fdString(fd, "from_path"), to_path: fdString(fd, "to_path") });
 
 // ---------------------------------------------------------------------------
 // Generic list operations

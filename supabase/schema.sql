@@ -115,6 +115,11 @@ create table if not exists public.site_settings (
 -- Section headings (tag pill + orange / dark / grey heading parts + description) per section.
 alter table public.site_settings add column if not exists section_texts jsonb not null default '{}'::jsonb;
 
+-- Global SEO / analytics fields.
+alter table public.site_settings add column if not exists seo_focus_keyword text not null default '';
+alter table public.site_settings add column if not exists ga4_id text not null default '';
+alter table public.site_settings add column if not exists search_console_verification text not null default '';
+
 -- -----------------------------------------------------------------------------
 -- projects + project_images
 -- -----------------------------------------------------------------------------
@@ -140,6 +145,15 @@ create table if not exists public.projects (
   updated_at        timestamptz not null default now()
 );
 create index if not exists projects_published_sort_idx on public.projects (is_published, sort_order);
+
+-- Per-project SEO overrides (empty values fall back to the generated metadata).
+alter table public.projects add column if not exists seo_title text not null default '';
+alter table public.projects add column if not exists seo_description text not null default '';
+alter table public.projects add column if not exists focus_keyword text not null default '';
+alter table public.projects add column if not exists og_image text not null default '';
+alter table public.projects add column if not exists cover_image_alt text not null default '';
+alter table public.projects add column if not exists canonical_url text not null default '';
+alter table public.projects add column if not exists noindex boolean not null default false;
 
 create table if not exists public.project_images (
   id          uuid primary key default gen_random_uuid(),
@@ -341,6 +355,16 @@ create table if not exists public.email_templates (
 -- -----------------------------------------------------------------------------
 -- dashboard_state (e.g. quick setup dismissed, last cron heartbeat)
 -- -----------------------------------------------------------------------------
+-- 301 redirects managed from the admin. Paths only ("/old" -> "/new" or full https URL).
+create table if not exists public.redirects (
+  id          uuid primary key default gen_random_uuid(),
+  from_path   text not null unique check (from_path ~ '^/[^?#]*$' and length(from_path) > 1),
+  to_path     text not null check (to_path ~ '^/' or to_path ~* '^https?://'),
+  is_active   boolean not null default true,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
 create table if not exists public.dashboard_state (
   key         text primary key,
   value       jsonb not null default '{}'::jsonb,
@@ -549,7 +573,7 @@ begin
   foreach t in array array[
     'site_settings', 'projects', 'project_images', 'services', 'process_steps', 'testimonials',
     'faqs', 'availability_rules', 'blocked_dates', 'booking_settings', 'bookings',
-    'email_templates', 'dashboard_state'
+    'email_templates', 'dashboard_state', 'redirects'
   ]
   loop
     execute format('drop trigger if exists set_updated_at on public.%I', t);
@@ -574,7 +598,8 @@ begin
   foreach t in array array[
     'admins', 'site_settings', 'projects', 'project_images', 'services', 'process_steps',
     'testimonials', 'faqs', 'availability_rules', 'blocked_dates', 'booking_settings',
-    'bookings', 'email_templates', 'dashboard_state', 'rate_limits', 'signup_allowlist'
+    'bookings', 'email_templates', 'dashboard_state', 'rate_limits', 'signup_allowlist',
+    'redirects'
   ]
   loop
     execute format('alter table public.%I enable row level security', t);
@@ -643,6 +668,16 @@ begin
   end loop;
 end;
 $$;
+
+-- redirects: anyone may read active rules (the proxy looks them up per request),
+-- only admins can write them.
+drop policy if exists "public read active" on public.redirects;
+create policy "public read active" on public.redirects
+  for select to anon, authenticated using (is_active or public.is_admin());
+drop policy if exists "admin write" on public.redirects;
+create policy "admin write" on public.redirects
+  for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
 
 -- admins: an admin can read only their own row. Rows are added manually via SQL.
 drop policy if exists "self read" on public.admins;

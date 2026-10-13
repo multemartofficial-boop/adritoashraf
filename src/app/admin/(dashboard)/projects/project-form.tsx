@@ -120,6 +120,34 @@ export function ProjectForm({ action, project }: { action: Action; project?: Pro
         </label>
       </FormSection>
 
+      <FormSection title="SEO" description="Optional overrides for this project page. Leave empty to use the generated values.">
+        <Field label="Meta title" htmlFor="seo_title" error={errors.seo_title} hint="Default: project title. About 50–60 characters.">
+          <Input {...errProps("seo_title", errors.seo_title)} defaultValue={project?.seo_title} maxLength={70} />
+        </Field>
+        <Field label="Focus keyword" htmlFor="focus_keyword" error={errors.focus_keyword} hint="Main search term for this page.">
+          <Input {...errProps("focus_keyword", errors.focus_keyword)} defaultValue={project?.focus_keyword} />
+        </Field>
+        <Field label="Meta description" htmlFor="seo_description" error={errors.seo_description} className="md:col-span-2" hint="Default: short description. About 150 characters.">
+          <Textarea {...errProps("seo_description", errors.seo_description)} rows={2} defaultValue={project?.seo_description} maxLength={170} />
+        </Field>
+        <Field label="Cover image alt text" htmlFor="cover_image_alt" error={errors.cover_image_alt} hint="Describe the cover for screen readers and Google Images.">
+          <Input {...errProps("cover_image_alt", errors.cover_image_alt)} defaultValue={project?.cover_image_alt} />
+        </Field>
+        <Field label="Canonical URL" htmlFor="canonical_url" error={errors.canonical_url} hint="Only if this page also exists elsewhere.">
+          <Input {...errProps("canonical_url", errors.canonical_url)} type="url" defaultValue={project?.canonical_url} placeholder="https://" />
+        </Field>
+        <Field label="Social share image" htmlFor="og_image" error={errors.og_image} hint="Default: cover image. 1200 × 630 recommended." className="md:col-span-2">
+          <ImageField name="og_image" folder="projects" defaultValue={project?.og_image} error={errors.og_image} />
+        </Field>
+        <label className="flex items-center gap-3 md:col-span-2">
+          <Switch name="noindex" defaultChecked={project?.noindex ?? false} />
+          <span className="text-sm">
+            <span className="font-medium">Hide from search engines</span>
+            <span className="block text-xs text-admin-muted">Adds noindex and removes the page from the sitemap.</span>
+          </span>
+        </label>
+      </FormSection>
+
       <FormActions pending={pending} cancelHref="/admin/projects" label={project ? "Save project" : "Create project"} />
     </form>
   );

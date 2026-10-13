@@ -27,13 +27,24 @@ export const getSiteSettings = cache(async (): Promise<SiteSettingsRow> => {
 
 export type ProjectCard = Pick<
   ProjectRow,
-  "id" | "title" | "title_accent" | "slug" | "short_description" | "tags" | "cover_image" | "card_theme" | "role" | "duration"
+  | "id"
+  | "title"
+  | "title_accent"
+  | "slug"
+  | "short_description"
+  | "tags"
+  | "cover_image"
+  | "card_theme"
+  | "role"
+  | "duration"
+  | "noindex"
+  | "updated_at"
 >;
 
 export const getProjects = cache(async (): Promise<ProjectCard[]> => {
   const { data, error } = await supabasePublic()
     .from("projects")
-    .select("id, title, title_accent, slug, short_description, tags, cover_image, card_theme, role, duration")
+    .select("id, title, title_accent, slug, short_description, tags, cover_image, card_theme, role, duration, noindex, updated_at")
     .eq("is_published", true)
     .order("sort_order");
   logError("projects", error);

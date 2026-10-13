@@ -103,6 +103,26 @@ and runs a tiny database query so the free Supabase project never pauses for ina
    ```
    Expected: `{"ok":true,"db":"up","checked":0,"sent":0,"failed":0}`. Without the header it returns 401.
 
+## 5b. SEO
+
+Built in and automatic:
+- `sitemap.xml` and `robots.txt` are generated from the database (projects appear
+  automatically; `/admin`, `/manage-booking` and `/api` are excluded).
+- Every page has a canonical URL; project pages use their SEO fields when set.
+- JSON-LD: `Person` + `WebSite` site-wide, `BreadcrumbList` + `CreativeWork` on
+  project pages, `FAQPage` on the home page when FAQs exist.
+- `https://` and the apex domain are enforced with 301s once
+  `NEXT_PUBLIC_SITE_URL` is `https://adritoashraf.com`; `www.` redirects to apex
+  and non-canonical hosts get `X-Robots-Tag: noindex`.
+- Admin → **Site Settings → SEO & sharing**: meta title/description, focus
+  keyword, OG image, **GA4 Measurement ID** and **Search Console verification**.
+- Admin → **Redirects**: add/manage 301s (live within a minute, no redeploy).
+- Each project has SEO overrides: meta title/description, focus keyword, OG
+  image, cover alt text, canonical URL and a **noindex** switch.
+
+After launch: verify the domain in Google Search Console (paste the token into
+Site Settings), submit `/sitemap.xml`, and add the GA4 ID when ready.
+
 ## 6. Email (SMTP)
 Bookings work without email, but clients will not receive confirmations until SMTP is set.
 1. cPanel -> **Email Accounts** -> create `no-reply@yourdomain.com`.

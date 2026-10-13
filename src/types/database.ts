@@ -70,7 +70,10 @@ export type SiteSettingsRow = {
   footer_text: string;
   seo_title: string;
   seo_description: string;
+  seo_focus_keyword: string;
   og_image: string;
+  ga4_id: string;
+  search_console_verification: string;
   default_currency: Currency;
   section_texts: SectionTexts;
   theme: Json;
@@ -93,6 +96,13 @@ export type ProjectRow = {
   live_url: string;
   cover_image: string;
   card_theme: CardTheme;
+  seo_title: string;
+  seo_description: string;
+  focus_keyword: string;
+  og_image: string;
+  cover_image_alt: string;
+  canonical_url: string;
+  noindex: boolean;
   sort_order: number;
   is_published: boolean;
   created_at: string;
@@ -230,6 +240,15 @@ export type EmailTemplateRow = {
   updated_at: string;
 };
 
+export type RedirectRow = {
+  id: string;
+  from_path: string;
+  to_path: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type DashboardStateRow = {
   key: string;
   value: Json;
@@ -278,6 +297,7 @@ export type Database = {
         "id"
       >;
       email_templates: Table<EmailTemplateRow, "type" | "subject" | "body_html" | "body_text", "id">;
+      redirects: Table<RedirectRow, "from_path" | "to_path", "id">;
       dashboard_state: Table<DashboardStateRow, "key">;
       rate_limits: Table<RateLimitRow, "key">;
       signup_allowlist: Table<{ email: string; created_at: string }, "email">;
