@@ -45,9 +45,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   images: {
-    // No on-server image optimizer: saves RAM on shared hosting and avoids native `sharp`
-    // binaries. Images are pre-optimized (WebP) at upload/build time instead.
-    unoptimized: true,
+    // No on-server image optimizer on cPanel: saves RAM on shared hosting and avoids
+    // native `sharp` binaries. On Vercel (VERCEL env is set automatically) the
+    // optimizer is enabled — it has sharp and it costs nothing extra.
+    unoptimized: !process.env.VERCEL,
     remotePatterns: supabaseOrigin
       ? [{ protocol: "https", hostname: new URL(supabaseOrigin).hostname, pathname: "/storage/v1/object/public/**" }]
       : [],

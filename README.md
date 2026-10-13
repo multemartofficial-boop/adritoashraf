@@ -33,7 +33,39 @@ Optional local test of the production bundle: `npm start`, then open http://loca
 > `NEXT_PUBLIC_*` values are baked in at build time. When you change the domain or Supabase
 > project, update `.env.local` and rebuild.
 
-## 4. Deploy to WebHostBD cPanel (Node.js App)
+## 4a. Deploy to Vercel (recommended)
+
+1. Push the repo to GitHub, then **vercel.com -> Add New -> Project -> Import** the repo.
+   No build settings needed — Vercel detects Next.js automatically.
+2. **Environment Variables** (Project Settings -> Environment Variables): add every key
+   from `.env.example` with real values — the Supabase URL + keys, `STORAGE_*`,
+   `CRON_SECRET`, SMTP keys once you have them, and:
+   - `NEXT_PUBLIC_SITE_URL` = `https://your-domain` (no trailing slash)
+   - Never add `SUPABASE_ACCESS_TOKEN`, `ADMIN_EMAIL` or `ADMIN_PASSWORD` — those are
+     one-time local setup values.
+3. **Deploy.** Then open `https://<project>.vercel.app/api/health` — expect
+   `{"ok":true,"db":"up"}`.
+4. **Cron:** `vercel.json` already schedules `GET /api/cron/reminders` daily at
+   03:00 UTC (9 AM Dhaka). Vercel automatically sends `Authorization: Bearer
+   <CRON_SECRET>` — as long as `CRON_SECRET` is set in env vars, it just works.
+   Check **Project -> Settings -> Cron Jobs** to see it run.
+5. Image optimization (`next/image`) is enabled automatically on Vercel
+   (`images.unoptimized` only applies off-Vercel).
+
+### Connecting a Hostinger domain to Vercel
+1. Vercel project -> **Settings -> Domains -> Add** -> enter `yourdomain.com` and
+   `www.yourdomain.com`.
+2. In **Hostinger -> DNS Zone**, set:
+   - `A` record: `@` -> `76.76.21.21`
+   - `CNAME` record: `www` -> `cname.vercel-dns.com`
+   (Delete any existing `A`/`CNAME` records for `@`/`www` that point elsewhere.)
+3. SSL is issued automatically by Vercel once DNS resolves (can take up to 24h,
+   usually minutes). HSTS activates automatically because `NEXT_PUBLIC_SITE_URL`
+   starts with `https://`.
+4. In **Supabase -> Authentication -> URL Configuration**, set Site URL to
+   `https://yourdomain.com`.
+
+## 4b. Deploy to WebHostBD cPanel (Node.js App)
 1. **cPanel -> Setup Node.js App -> Create Application**
    - Node.js version: **22.x** (or 20.x, at least 20.9)
    - Application mode: **Production**
