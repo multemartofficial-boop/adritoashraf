@@ -14,6 +14,7 @@ import {
   MessageSquareQuote,
   Settings,
   ShieldCheck,
+  UserRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Testimonials", href: "/admin/testimonials", icon: MessageSquareQuote },
       { label: "How I Work", href: "/admin/process", icon: ListOrdered },
       { label: "FAQs", href: "/admin/faqs", icon: HelpCircle },
+      { label: "About Me", href: "/admin/about-me", icon: UserRound },
       { label: "Site Settings", href: "/admin/settings", icon: Settings },
     ],
   },

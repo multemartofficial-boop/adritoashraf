@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminRoute } from "@/lib/auth/origin";
-import { MEDIA_FOLDERS, uploadSiteImage, type MediaFolder } from "@/lib/storage";
+import { MEDIA_FOLDERS, uploadSiteFile, type MediaFolder } from "@/lib/storage";
 import { UploadError } from "@/lib/storage/validate";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ export const POST = adminRoute(async (request) => {
   }
 
   try {
-    const result = await uploadSiteImage(file, folder as MediaFolder);
+    const result = await uploadSiteFile(file, folder as MediaFolder);
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
     if (err instanceof UploadError) return NextResponse.json({ error: err.message }, { status: 400 });

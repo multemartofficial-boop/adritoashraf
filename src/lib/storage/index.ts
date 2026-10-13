@@ -85,7 +85,7 @@ export function storage(): StorageProvider {
 
 const randomName = (ext: string) => `${crypto.randomUUID()}.${ext}`;
 
-export const MEDIA_FOLDERS = ["projects", "services", "testimonials", "site", "media"] as const;
+export const MEDIA_FOLDERS = ["projects", "services", "testimonials", "site", "media", "about"] as const;
 export type MediaFolder = (typeof MEDIA_FOLDERS)[number];
 
 /** Storage path for a public-bucket URL we issued, or null for anything else. */
@@ -103,7 +103,7 @@ export function isSafeMediaPath(path: string): boolean {
   return (
     rest.length === 0 &&
     MEDIA_FOLDERS.includes(folder as MediaFolder) &&
-    /^[a-f0-9-]{36}\.(jpg|png|webp|avif|gif)$/.test(file ?? "")
+    /^[a-f0-9-]{36}\.(jpg|png|webp|avif|gif|pdf)$/.test(file ?? "")
   );
 }
 
@@ -113,9 +113,9 @@ export async function removePublicFilesByUrl(urls: string[]) {
   if (paths.length) await storage().remove("public", paths).catch((e) => console.error("[storage cleanup]", e));
 }
 
-/** Validate + upload a site image to the public bucket. Returns its public URL and path. */
-export async function uploadSiteImage(file: File, folder: MediaFolder) {
-  const v = await validateUpload(file, IMAGE_TYPES);
+/** Validate + upload a site file (image or PDF) to the public bucket. Returns its public URL and path. */
+export async function uploadSiteFile(file: File, folder: MediaFolder) {
+  const v = await validateUpload(file, [...IMAGE_TYPES, "application/pdf"]);
   const path = `${folder}/${randomName(v.ext)}`;
   await storage().put("public", path, v.bytes, v.mime);
   return { path, url: storage().publicUrl(path), size: v.size, mime: v.mime };

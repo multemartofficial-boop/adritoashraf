@@ -87,7 +87,7 @@ export function SettingsForm({ settings: s }: { settings: SiteSettingsRow }) {
         </Field>
       </FormSection>
 
-      <FormSection title="About" description="The heading has three colour parts: orange, dark, then grey (darkens on scroll).">
+      <FormSection title="Results" description="The stats + quote section (its tag pill reads “Results”). The heading has three colour parts: orange, dark, then grey.">
         <Field label="Orange part" htmlFor="about_heading_accent" error={e["about_heading.accent"]}>
           <Input id="about_heading_accent" name="about_heading_accent" defaultValue={s.about_heading.accent ?? ""} />
         </Field>
@@ -99,6 +99,12 @@ export function SettingsForm({ settings: s }: { settings: SiteSettingsRow }) {
         </Field>
         <Field label="Paragraph" htmlFor="about_text" error={e.about_text} className="md:col-span-2">
           <Textarea {...errProps("about_text", e.about_text)} rows={3} defaultValue={s.about_text} />
+        </Field>
+        <Field label="Quote card text" htmlFor="about_quote" error={e.about_quote} hint="The ink card's blockquote. Empty = uses your first written testimonial." className="md:col-span-2">
+          <Textarea {...errProps("about_quote", e.about_quote)} rows={2} defaultValue={s.about_quote} maxLength={300} />
+        </Field>
+        <Field label="Quote author" htmlFor="about_quote_author" error={e.about_quote_author} hint="Name shown under the quote (only when the quote above is set).">
+          <Input {...errProps("about_quote_author", e.about_quote_author)} defaultValue={s.about_quote_author} />
         </Field>
         <Field label="Stat cards" error={e.about_stats} hint="Up to 3 cards in the bento grid, e.g. “4+” · “Production systems delivered”." className="md:col-span-2">
           <RowsField

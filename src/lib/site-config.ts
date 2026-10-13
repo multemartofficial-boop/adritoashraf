@@ -1,4 +1,4 @@
-import type { SiteSettingsRow } from "@/types/database";
+import type { AboutMeRow, SiteSettingsRow } from "@/types/database";
 
 /**
  * Fallback site text, used only if the database is unreachable. The real values live in
@@ -38,9 +38,36 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsRow = {
   og_image: "",
   ga4_id: "",
   search_console_verification: "",
+  about_quote: "",
+  about_quote_author: "",
   default_currency: "USD",
   section_texts: {},
   theme: {},
+  updated_at: new Date(0).toISOString(),
+};
+
+/** Fallback for the About Me section if the database is unreachable. */
+export const DEFAULT_ABOUT_ME: AboutMeRow = {
+  id: 1,
+  is_visible: false, // hidden on fallback — the DB row decides
+  tag: "About Me",
+  heading: { accent: "Hi, I'm Adrito,", strong: "A Full Stack Developer", muted: "Who Builds Real Products." },
+  bio_1: "",
+  bio_2: "",
+  full_name: "Adrito Ashraf",
+  role: "Full Stack Developer",
+  location: "Dhaka, Bangladesh",
+  experience_years: "4+",
+  email: "",
+  availability_enabled: true,
+  availability_text: "Available for projects",
+  experience_badge: "4+ Years Experience",
+  skills: [],
+  social_links: [],
+  primary_cta_label: "Let's Talk",
+  primary_cta_href: "/book",
+  cv_url: "",
+  image_url: "/uploads/profile.webp",
   updated_at: new Date(0).toISOString(),
 };
 

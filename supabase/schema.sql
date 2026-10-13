@@ -365,6 +365,60 @@ create table if not exists public.redirects (
   updated_at  timestamptz not null default now()
 );
 
+-- about_me — single-row "About Me" section (after Hero, before Results).
+create table if not exists public.about_me (
+  id                   smallint primary key default 1 check (id = 1),
+  is_visible           boolean not null default true,
+  tag                  text not null default 'About Me',
+  heading              jsonb not null default '{}'::jsonb,
+  bio_1                text not null default '',
+  bio_2                text not null default '',
+  full_name            text not null default '',
+  role                 text not null default '',
+  location             text not null default '',
+  experience_years     text not null default '',
+  email                text not null default '',
+  availability_enabled boolean not null default true,
+  availability_text    text not null default 'Available for projects',
+  experience_badge     text not null default '',
+  skills               jsonb not null default '[]'::jsonb,
+  social_links         jsonb not null default '[]'::jsonb,
+  primary_cta_label    text not null default 'Let''s Talk',
+  primary_cta_href     text not null default '/book',
+  cv_url               text not null default '',
+  image_url            text not null default '',
+  updated_at           timestamptz not null default now()
+);
+
+-- Seed the About Me row from the existing site settings (name, role, location,
+-- email, social links, tech list) so it starts with real data, not placeholders.
+insert into public.about_me
+  (id, heading, bio_1, bio_2, experience_years, experience_badge, image_url)
+select
+  1,
+  '{"accent":"Hi, I''m Adrito,","strong":"A Full Stack Developer","muted":"Who Builds Real Products."}'::jsonb,
+  'I design and build complete web products — from the database to the interface. I work with clients who need something that actually ships: fast websites, SaaS platforms and internal business tools.',
+  'Every project starts with understanding the business, then I handle design, development, deployment and support. You get one person responsible for the whole thing.',
+  '4+',
+  '4+ Years Experience',
+  '/uploads/profile.webp'
+on conflict (id) do nothing;
+
+update public.about_me a
+set full_name    = coalesce(nullif(a.full_name, ''), s.owner_name),
+    role         = coalesce(nullif(a.role, ''), s.role),
+    location     = coalesce(nullif(a.location, ''), s.address),
+    email        = coalesce(nullif(a.email, ''), s.contact_email),
+    skills       = case when a.skills = '[]'::jsonb then s.marquee_items else a.skills end,
+    social_links = case when a.social_links = '[]'::jsonb then s.social_links else a.social_links end
+from public.site_settings s
+where s.id = 1 and a.id = 1;
+
+-- Editable quote card shown inside the Results section (falls back to the
+-- featured testimonial when empty).
+alter table public.site_settings add column if not exists about_quote text not null default '';
+alter table public.site_settings add column if not exists about_quote_author text not null default '';
+
 create table if not exists public.dashboard_state (
   key         text primary key,
   value       jsonb not null default '{}'::jsonb,
@@ -573,7 +627,7 @@ begin
   foreach t in array array[
     'site_settings', 'projects', 'project_images', 'services', 'process_steps', 'testimonials',
     'faqs', 'availability_rules', 'blocked_dates', 'booking_settings', 'bookings',
-    'email_templates', 'dashboard_state', 'redirects'
+    'email_templates', 'dashboard_state', 'redirects', 'about_me'
   ]
   loop
     execute format('drop trigger if exists set_updated_at on public.%I', t);
@@ -599,7 +653,7 @@ begin
     'admins', 'site_settings', 'projects', 'project_images', 'services', 'process_steps',
     'testimonials', 'faqs', 'availability_rules', 'blocked_dates', 'booking_settings',
     'bookings', 'email_templates', 'dashboard_state', 'rate_limits', 'signup_allowlist',
-    'redirects'
+    'redirects', 'about_me'
   ]
   loop
     execute format('alter table public.%I enable row level security', t);
@@ -679,6 +733,15 @@ create policy "admin write" on public.redirects
   for all to authenticated
   using (public.is_admin()) with check (public.is_admin());
 
+-- about_me: public read, admin write (same shape as site_settings).
+drop policy if exists "public read" on public.about_me;
+create policy "public read" on public.about_me
+  for select to anon, authenticated using (true);
+drop policy if exists "admin write" on public.about_me;
+create policy "admin write" on public.about_me
+  for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
 -- admins: an admin can read only their own row. Rows are added manually via SQL.
 drop policy if exists "self read" on public.admins;
 create policy "self read" on public.admins
@@ -696,7 +759,7 @@ revoke all on public.signup_allowlist from anon, authenticated;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
   ('site-media', 'site-media', true, 5242880,
-    array['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif']),
+    array['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'application/pdf']),
   ('booking-attachments', 'booking-attachments', false, 5242880,
     array['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
 on conflict (id) do update

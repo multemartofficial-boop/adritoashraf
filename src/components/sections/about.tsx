@@ -6,7 +6,8 @@ import { SectionTag, TriHeading } from "@/components/site/section-heading";
 
 export function About({ settings: s, featured }: { settings: SiteSettingsRow; featured?: TestimonialRow }) {
   const [a, b, c] = s.about_stats;
-  const quote = featured?.content || s.tagline;
+  const quote = s.about_quote || featured?.content || s.tagline;
+  const quoteAuthor = s.about_quote ? s.about_quote_author : featured?.client_name;
   const { props: photo } = getImageProps({
     src: featured?.poster_url || featured?.avatar_url || HERO_IMAGE.mobile,
     alt: "",
@@ -16,10 +17,10 @@ export function About({ settings: s, featured }: { settings: SiteSettingsRow; fe
   });
 
   return (
-    <section id="about" className="section-x flex min-h-svh flex-col justify-center gap-14 bg-white py-24 text-ink md:py-32">
+    <section id="results" className="section-x flex min-h-svh flex-col justify-center gap-14 bg-white py-24 text-ink md:py-32">
       <div className="grid items-center gap-10 lg:grid-cols-[1.6fr_1fr]">
         <div className="space-y-6">
-          <SectionTag>About</SectionTag>
+          <SectionTag>Results</SectionTag>
           <TriHeading text={s.about_heading} />
           {s.about_text && <p className="max-w-xl leading-relaxed text-neutral-600">{s.about_text}</p>}
         </div>
@@ -80,7 +81,7 @@ export function About({ settings: s, featured }: { settings: SiteSettingsRow; fe
               </span>
               <blockquote className="absolute inset-x-4 bottom-4 rounded-2xl bg-white/95 p-4 text-sm leading-relaxed text-neutral-800 shadow-xl">
                 “{quote.length > 150 ? `${quote.slice(0, 147)}…` : quote}”
-                {featured && <footer className="mt-2 text-xs font-semibold text-ink">{featured.client_name}</footer>}
+                {quoteAuthor && <footer className="mt-2 text-xs font-semibold text-ink">{quoteAuthor}</footer>}
               </blockquote>
             </article>
           )}

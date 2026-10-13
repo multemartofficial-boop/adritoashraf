@@ -1,6 +1,7 @@
-import { getFaqs, getProcessSteps, getProjects, getServices, getSiteSettings, getTestimonials } from "@/lib/data/public";
+import { getAboutMe, getFaqs, getProcessSteps, getProjects, getServices, getSiteSettings, getTestimonials } from "@/lib/data/public";
 import { JsonLd } from "@/components/site/json-ld";
 import { About } from "@/components/sections/about";
+import { AboutMe } from "@/components/sections/about-me";
 import { BookingCta } from "@/components/sections/booking-cta";
 import { Faq } from "@/components/sections/faq";
 import { Hero } from "@/components/sections/hero";
@@ -13,8 +14,9 @@ import { Testimonials } from "@/components/sections/testimonials";
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const [settings, projects, services, steps, testimonials, faqs] = await Promise.all([
+  const [settings, aboutMe, projects, services, steps, testimonials, faqs] = await Promise.all([
     getSiteSettings(),
+    getAboutMe(),
     getProjects(),
     getServices(),
     getProcessSteps(),
@@ -40,6 +42,7 @@ export default async function HomePage() {
         />
       )}
       <Hero settings={settings} />
+      <AboutMe data={aboutMe} />
       <About settings={settings} featured={featured} />
       <Portfolio projects={projects} text={t.portfolio} />
       <Services services={services} text={t.services} defaultCurrency={settings.default_currency} />

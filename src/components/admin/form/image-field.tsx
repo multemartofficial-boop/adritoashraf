@@ -18,7 +18,7 @@ export function ImageField({
 }: {
   name: string;
   defaultValue?: string;
-  folder: "projects" | "services" | "testimonials" | "site" | "media";
+  folder: "projects" | "services" | "testimonials" | "site" | "media" | "about";
   aspect?: string;
   error?: string;
 }) {

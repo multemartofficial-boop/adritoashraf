@@ -74,6 +74,8 @@ export type SiteSettingsRow = {
   og_image: string;
   ga4_id: string;
   search_console_verification: string;
+  about_quote: string;
+  about_quote_author: string;
   default_currency: Currency;
   section_texts: SectionTexts;
   theme: Json;
@@ -240,6 +242,30 @@ export type EmailTemplateRow = {
   updated_at: string;
 };
 
+export type AboutMeRow = {
+  id: number;
+  is_visible: boolean;
+  tag: string;
+  heading: AboutHeading;
+  bio_1: string;
+  bio_2: string;
+  full_name: string;
+  role: string;
+  location: string;
+  experience_years: string;
+  email: string;
+  availability_enabled: boolean;
+  availability_text: string;
+  experience_badge: string;
+  skills: string[];
+  social_links: SocialLink[];
+  primary_cta_label: string;
+  primary_cta_href: string;
+  cv_url: string;
+  image_url: string;
+  updated_at: string;
+};
+
 export type RedirectRow = {
   id: string;
   from_path: string;
@@ -275,6 +301,7 @@ export type Database = {
     Tables: {
       admins: Table<AdminRow, "user_id" | "email">;
       site_settings: Table<SiteSettingsRow, never>;
+      about_me: Table<AboutMeRow, never>;
       projects: Table<ProjectRow, "title" | "slug", "id">;
       project_images: Table<ProjectImageRow, "project_id" | "image_url", "id">;
       services: Table<ServiceRow, "title" | "slug", "id">;

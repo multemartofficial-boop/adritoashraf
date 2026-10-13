@@ -255,6 +255,8 @@ export const siteSettingsSchema = z.object({
   marquee_items: stringList(20, 40),
   about_heading: z.object({ accent: text(120), strong: text(300), muted: text(200) }),
   about_text: text(600),
+  about_quote: text(300),
+  about_quote_author: text(80),
   about_stats: z
     .array(z.object({ value: required(12, "Value"), label: required(140, "Label") }))
     .max(3, "Up to 3 stats."),
@@ -299,6 +301,8 @@ export const parseSiteSettingsForm = (fd: FormData) =>
       muted: fdString(fd, "about_heading_muted"),
     },
     about_text: fdString(fd, "about_text"),
+    about_quote: fdString(fd, "about_quote"),
+    about_quote_author: fdString(fd, "about_quote_author"),
     about_stats: asArray(fdJson(fd, "about_stats")),
     contact_email: fdString(fd, "contact_email").trim(),
     phone: fdString(fd, "phone"),
@@ -325,6 +329,59 @@ export const parseSiteSettingsForm = (fd: FormData) =>
         },
       ]),
     ),
+  });
+
+// ---------------------------------------------------------------------------
+// About Me section (single row)
+// ---------------------------------------------------------------------------
+export const aboutMeSchema = z.object({
+  is_visible: z.boolean(),
+  tag: text(40),
+  heading: z.object({ accent: text(120), strong: text(300), muted: text(200) }),
+  bio_1: text(600),
+  bio_2: text(600),
+  full_name: text(80),
+  role: text(80),
+  location: text(120),
+  experience_years: text(20),
+  email: z.union([z.literal(""), z.email("Enter a valid email.")]),
+  availability_enabled: z.boolean(),
+  availability_text: text(80),
+  experience_badge: text(60),
+  skills: stringList(30, 40),
+  social_links: z.array(z.object({ platform: z.enum(SOCIAL_PLATFORMS), url: optionalUrl })).max(10, "Up to 10 links."),
+  primary_cta_label: text(40),
+  primary_cta_href: link,
+  cv_url: z.union([z.literal(""), httpUrl, z.string().regex(/^\/[\w\-./]+$/, "Invalid file path.")]),
+  image_url: imageUrl,
+});
+export type AboutMeInput = z.infer<typeof aboutMeSchema>;
+
+export const parseAboutMeForm = (fd: FormData) =>
+  aboutMeSchema.safeParse({
+    is_visible: fdBool(fd, "is_visible"),
+    tag: fdString(fd, "tag"),
+    heading: {
+      accent: fdString(fd, "heading_accent"),
+      strong: fdString(fd, "heading_strong"),
+      muted: fdString(fd, "heading_muted"),
+    },
+    bio_1: fdString(fd, "bio_1"),
+    bio_2: fdString(fd, "bio_2"),
+    full_name: fdString(fd, "full_name"),
+    role: fdString(fd, "role"),
+    location: fdString(fd, "location"),
+    experience_years: fdString(fd, "experience_years"),
+    email: fdString(fd, "email").trim(),
+    availability_enabled: fdBool(fd, "availability_enabled"),
+    availability_text: fdString(fd, "availability_text"),
+    experience_badge: fdString(fd, "experience_badge"),
+    skills: asArray(fdJson(fd, "skills")),
+    social_links: asArray(fdJson(fd, "social_links")),
+    primary_cta_label: fdString(fd, "primary_cta_label"),
+    primary_cta_href: fdString(fd, "primary_cta_href"),
+    cv_url: fdString(fd, "cv_url").trim(),
+    image_url: fdString(fd, "image_url"),
   });
 
 // ---------------------------------------------------------------------------

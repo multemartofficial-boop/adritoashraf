@@ -1,8 +1,9 @@
 import "server-only";
 import { cache } from "react";
 import { supabasePublic } from "@/lib/supabase/public";
-import { DEFAULT_SITE_SETTINGS } from "@/lib/site-config";
+import { DEFAULT_ABOUT_ME, DEFAULT_SITE_SETTINGS } from "@/lib/site-config";
 import type {
+  AboutMeRow,
   FaqRow,
   ProcessStepRow,
   ProjectImageRow,
@@ -23,6 +24,12 @@ export const getSiteSettings = cache(async (): Promise<SiteSettingsRow> => {
   const { data, error } = await supabasePublic().from("site_settings").select("*").eq("id", 1).maybeSingle();
   logError("site_settings", error);
   return data ? { ...DEFAULT_SITE_SETTINGS, ...data } : DEFAULT_SITE_SETTINGS;
+});
+
+export const getAboutMe = cache(async (): Promise<AboutMeRow> => {
+  const { data, error } = await supabasePublic().from("about_me").select("*").eq("id", 1).maybeSingle();
+  logError("about_me", error);
+  return data ? { ...DEFAULT_ABOUT_ME, ...data } : DEFAULT_ABOUT_ME;
 });
 
 export type ProjectCard = Pick<

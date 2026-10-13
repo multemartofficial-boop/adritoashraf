@@ -21,15 +21,18 @@ export function TriHeading({
   tone = "light",
   as: Tag = "h2",
   className,
+  id,
 }: {
   text: Pick<SectionText, "accent" | "strong" | "muted">;
   tone?: "light" | "dark";
   as?: "h1" | "h2";
   className?: string;
+  id?: string;
 }) {
   if (!text.accent && !text.strong && !text.muted) return null;
   return (
     <Tag
+      id={id}
       className={cn(
         "max-w-4xl text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.15] font-semibold tracking-tight text-balance",
         className,
@@ -37,7 +40,7 @@ export function TriHeading({
     >
       {text.accent && <span className="text-orange">{text.accent} </span>}
       {text.strong && <span className={tone === "light" ? "text-ink" : "text-white"}>{text.strong} </span>}
-      {text.muted && <span className={tone === "light" ? "text-neutral-300" : "text-white/35"}>{text.muted}</span>}
+      {text.muted && <span className={tone === "light" ? "text-neutral-400" : "text-white/50"}>{text.muted}</span>}
     </Tag>
   );
 }
