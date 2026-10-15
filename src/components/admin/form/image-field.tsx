@@ -1,11 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import { ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { uploadImage } from "@/lib/image-compress";
 import { Button } from "@/components/ui/button";
+import { FitImage } from "@/components/ui/fit-image";
 import { cn } from "@/lib/utils";
 
 /** Upload one image (compressed to WebP in the browser) and store its URL in a hidden input. */
@@ -61,7 +61,7 @@ export function ImageField({
         )}
       >
         {url ? (
-          <Image src={url} alt="" fill sizes="448px" className="object-cover" />
+          <FitImage src={url} alt="" sizes="448px" />
         ) : (
           <button
             type="button"
@@ -79,11 +79,23 @@ export function ImageField({
         )}
       </div>
       <div className="flex gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={busy}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => inputRef.current?.click()}
+          disabled={busy}
+        >
           <Upload /> {url ? "Replace" : "Upload"}
         </Button>
         {url && (
-          <Button type="button" variant="ghost" size="sm" onClick={() => setUrl("")} disabled={busy}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setUrl("")}
+            disabled={busy}
+          >
             <Trash2 /> Remove
           </Button>
         )}

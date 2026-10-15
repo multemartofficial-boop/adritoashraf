@@ -7,7 +7,10 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
-  const [settings, projects] = await Promise.all([getSiteSettings(), getProjects()]);
+  const [settings, projects] = await Promise.all([
+    getSiteSettings(),
+    getProjects(),
+  ]);
 
   return [
     {
@@ -15,6 +18,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: settings.updated_at,
       changeFrequency: "weekly",
       priority: 1,
+    },
+    {
+      url: `${base}/projects`,
+      lastModified: projects[0]?.updated_at ?? settings.updated_at,
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       url: `${base}/book`,

@@ -5,7 +5,13 @@ import { SOCIAL_LABEL, SocialIcon } from "./social-icon";
 
 const resolve = (href: string) => (href.startsWith("#") ? `/${href}` : href);
 
-export function Footer({ settings: s, projects }: { settings: SiteSettingsRow; projects: ProjectCard[] }) {
+export function Footer({
+  settings: s,
+  projects,
+}: {
+  settings: SiteSettingsRow;
+  projects: ProjectCard[];
+}) {
   const socials = s.social_links.filter((l) => l.url);
   const year = new Date().getFullYear();
 
@@ -13,10 +19,17 @@ export function Footer({ settings: s, projects }: { settings: SiteSettingsRow; p
     <footer className="bg-white text-ink">
       <div className="section-x grid gap-10 pt-20 pb-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div className="space-y-5">
-          <Link href="/" className="inline-block rounded-full border-[1.5px] border-orange px-4 py-1 font-serif text-2xl text-orange italic">
+          <Link
+            href="/"
+            className="inline-block rounded-full border-[1.5px] border-orange px-4 py-1 font-serif text-2xl text-orange italic"
+          >
             {s.site_name}
           </Link>
-          {s.footer_text && <p className="max-w-xs text-sm leading-relaxed text-neutral-600">{s.footer_text}</p>}
+          {s.footer_text && (
+            <p className="max-w-xs text-sm leading-relaxed text-neutral-600">
+              {s.footer_text}
+            </p>
+          )}
           {socials.length > 0 && (
             <div>
               <p className="mb-3 text-sm font-medium text-orange">Follow me</p>
@@ -40,17 +53,25 @@ export function Footer({ settings: s, projects }: { settings: SiteSettingsRow; p
         </div>
 
         <nav aria-label="Quick links">
-          <h2 className="mb-4 text-sm font-semibold text-orange">Quick Links</h2>
+          <h2 className="mb-4 text-sm font-semibold text-orange">
+            Quick Links
+          </h2>
           <ul className="space-y-2.5 text-sm">
             {s.nav_links.map((l) => (
               <li key={l.href}>
-                <a href={resolve(l.href)} className="text-neutral-700 hover:text-ink hover:underline">
+                <a
+                  href={resolve(l.href)}
+                  className="text-neutral-700 hover:text-ink hover:underline"
+                >
                   {l.label}
                 </a>
               </li>
             ))}
             <li>
-              <Link href="/book" className="text-neutral-700 hover:text-ink hover:underline">
+              <Link
+                href="/book"
+                className="text-neutral-700 hover:text-ink hover:underline"
+              >
                 Book a meeting
               </Link>
             </li>
@@ -63,11 +84,24 @@ export function Footer({ settings: s, projects }: { settings: SiteSettingsRow; p
             <ul className="space-y-2.5 text-sm">
               {projects.slice(0, 6).map((p) => (
                 <li key={p.id}>
-                  <Link href={`/projects/${p.slug}`} className="text-neutral-700 hover:text-ink hover:underline">
+                  <Link
+                    href={`/projects/${p.slug}`}
+                    className="text-neutral-700 hover:text-ink hover:underline"
+                  >
                     {p.title} {p.title_accent}
                   </Link>
                 </li>
               ))}
+              {projects.length > 6 && (
+                <li>
+                  <Link
+                    href="/projects"
+                    className="font-medium text-orange hover:text-ink hover:underline"
+                  >
+                    View all projects →
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
         )}
@@ -76,7 +110,10 @@ export function Footer({ settings: s, projects }: { settings: SiteSettingsRow; p
           {s.contact_email && (
             <div>
               <h2 className="mb-2 font-semibold text-orange">Email</h2>
-              <a href={`mailto:${s.contact_email}`} className="break-all text-neutral-700 hover:text-ink hover:underline">
+              <a
+                href={`mailto:${s.contact_email}`}
+                className="break-all text-neutral-700 hover:text-ink hover:underline"
+              >
                 {s.contact_email}
               </a>
             </div>
@@ -85,7 +122,10 @@ export function Footer({ settings: s, projects }: { settings: SiteSettingsRow; p
             <div>
               <h2 className="mb-2 font-semibold text-orange">Phone</h2>
               {s.phone && (
-                <a href={`tel:${s.phone.replace(/\s/g, "")}`} className="block text-neutral-700 hover:text-ink">
+                <a
+                  href={`tel:${s.phone.replace(/\s/g, "")}`}
+                  className="block text-neutral-700 hover:text-ink"
+                >
                   {s.phone}
                 </a>
               )}

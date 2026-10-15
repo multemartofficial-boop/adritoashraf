@@ -1,4 +1,12 @@
-import { getAboutMe, getFaqs, getProcessSteps, getProjects, getServices, getSiteSettings, getTestimonials } from "@/lib/data/public";
+import {
+  getAboutMe,
+  getFaqs,
+  getProcessSteps,
+  getProjects,
+  getServices,
+  getSiteSettings,
+  getTestimonials,
+} from "@/lib/data/public";
 import { JsonLd } from "@/components/site/json-ld";
 import { About } from "@/components/sections/about";
 import { AboutMe } from "@/components/sections/about-me";
@@ -14,15 +22,16 @@ import { Testimonials } from "@/components/sections/testimonials";
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const [settings, aboutMe, projects, services, steps, testimonials, faqs] = await Promise.all([
-    getSiteSettings(),
-    getAboutMe(),
-    getProjects(),
-    getServices(),
-    getProcessSteps(),
-    getTestimonials(),
-    getFaqs(),
-  ]);
+  const [settings, aboutMe, projects, services, steps, testimonials, faqs] =
+    await Promise.all([
+      getSiteSettings(),
+      getAboutMe(),
+      getProjects(),
+      getServices(),
+      getProcessSteps(),
+      getTestimonials(),
+      getFaqs(),
+    ]);
   const t = settings.section_texts;
   const featured = testimonials.find((x) => x.type === "text" && x.content);
 
@@ -44,8 +53,16 @@ export default async function HomePage() {
       <Hero settings={settings} />
       <AboutMe data={aboutMe} />
       <About settings={settings} featured={featured} />
-      <Portfolio projects={projects} text={t.portfolio} />
-      <Services services={services} text={t.services} defaultCurrency={settings.default_currency} />
+      <Portfolio
+        projects={projects.slice(0, 4)}
+        total={projects.length}
+        text={t.portfolio}
+      />
+      <Services
+        services={services}
+        text={t.services}
+        defaultCurrency={settings.default_currency}
+      />
       <Process steps={steps} text={t.process} />
       <Testimonials items={testimonials} text={t.testimonials} />
       <BookingCta text={t.booking} ownerName={settings.owner_name} />

@@ -34,8 +34,18 @@ const securityHeaders = [
   ...(isDev ? [] : [{ key: "X-Frame-Options", value: "DENY" }]),
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
-  ...(isHttps ? [{ key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" }] : []),
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+  },
+  ...(isHttps
+    ? [
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=31536000; includeSubDomains",
+        },
+      ]
+    : []),
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 
@@ -52,11 +62,24 @@ const nextConfig: NextConfig = {
     // optimizer is enabled — it has sharp and it costs nothing extra.
     unoptimized: !process.env.VERCEL,
     remotePatterns: supabaseOrigin
-      ? [{ protocol: "https", hostname: new URL(supabaseOrigin).hostname, pathname: "/storage/v1/object/public/**" }]
+      ? [
+          {
+            protocol: "https",
+            hostname: new URL(supabaseOrigin).hostname,
+            pathname: "/storage/v1/object/public/**",
+          },
+        ]
       : [],
   },
   outputFileTracingExcludes: {
     "/*": ["node_modules/sharp/**/*", "node_modules/@img/**/*"],
+  },
+  experimental: {
+    // Hover-prefetch dynamic routes + keep them in the client router cache for
+    // 30s — admin navigation feels instant. Server actions still revalidatePath,
+    // so writes always show fresh data.
+    dynamicOnHover: true,
+    staleTimes: { dynamic: 30 },
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

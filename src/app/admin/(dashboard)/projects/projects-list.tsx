@@ -15,11 +15,22 @@ import { CARD_THEME_META } from "./card-themes";
 
 type Item = Pick<
   ProjectRow,
-  "id" | "title" | "title_accent" | "slug" | "short_description" | "tags" | "cover_image" | "card_theme" | "is_published"
+  | "id"
+  | "title"
+  | "title_accent"
+  | "slug"
+  | "short_description"
+  | "tags"
+  | "cover_image"
+  | "card_theme"
+  | "is_published"
 >;
 
 export function ProjectsList({ initial }: { initial: Item[] }) {
-  const { items, move, setPublished, remove } = useContentList("projects", initial);
+  const { items, move, setPublished, remove } = useContentList(
+    "projects",
+    initial,
+  );
 
   if (items.length === 0) {
     return (
@@ -43,19 +54,43 @@ export function ProjectsList({ initial }: { initial: Item[] }) {
   return (
     <Panel className="divide-y divide-admin-border overflow-hidden">
       {items.map((p, i) => (
-        <div key={p.id} className="flex flex-col gap-3 p-3 transition-colors hover:bg-black/[0.015] sm:flex-row sm:items-center sm:p-4">
-          <Link href={`/admin/projects/${p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-            <span className={cn("relative h-14 w-24 shrink-0 overflow-hidden rounded-lg", CARD_THEME_META[p.card_theme].swatch)}>
-              {p.cover_image && <Image src={p.cover_image} alt="" fill sizes="96px" className="object-cover" />}
+        <div
+          key={p.id}
+          className="flex flex-col gap-3 p-3 transition-colors hover:bg-black/[0.015] sm:flex-row sm:items-center sm:p-4"
+        >
+          <Link
+            href={`/admin/projects/${p.id}`}
+            className="flex min-w-0 flex-1 items-center gap-3"
+          >
+            <span
+              className={cn(
+                "relative h-14 w-24 shrink-0 overflow-hidden rounded-lg",
+                CARD_THEME_META[p.card_theme].swatch,
+              )}
+            >
+              {p.cover_image && (
+                <Image
+                  src={p.cover_image}
+                  alt=""
+                  fill
+                  sizes="96px"
+                  className="object-contain p-1"
+                />
+              )}
             </span>
             <span className="min-w-0">
               <span className="flex items-center gap-2">
                 <span className="truncate text-sm font-semibold">
-                  {p.title} {p.title_accent && <em className="font-normal">{p.title_accent}</em>}
+                  {p.title}{" "}
+                  {p.title_accent && (
+                    <em className="font-normal">{p.title_accent}</em>
+                  )}
                 </span>
                 {!p.is_published && <Badge>Draft</Badge>}
               </span>
-              <span className="block truncate text-xs text-admin-muted">/projects/{p.slug}</span>
+              <span className="block truncate text-xs text-admin-muted">
+                /projects/{p.slug}
+              </span>
               {p.tags.length > 0 && (
                 <span className="mt-1 hidden flex-wrap gap-1 md:flex">
                   {p.tags.slice(0, 4).map((t) => (

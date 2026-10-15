@@ -3,7 +3,11 @@ import { Inter, Instrument_Serif, Manrope } from "next/font/google";
 import { publicEnv } from "@/lib/env/public";
 import "./globals.css";
 
-const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"], display: "swap" });
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap",
+});
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
@@ -11,12 +15,23 @@ const instrumentSerif = Instrument_Serif({
   style: ["normal", "italic"],
   display: "swap",
 });
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "swap" });
+// Admin-only typeface: no preload so public visitors never download it —
+// the woff2 is fetched only when an element actually uses font-admin.
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(publicEnv.NEXT_PUBLIC_SITE_URL),
-  title: { default: "Adrito Ashraf — Full Stack Developer", template: "%s · Adrito Ashraf" },
-  description: "Freelance full stack developer building websites, SaaS, ERP and HR systems.",
+  title: {
+    default: "Adrito Ashraf — Full Stack Developer",
+    template: "%s · Adrito Ashraf",
+  },
+  description:
+    "Freelance full stack developer building websites, SaaS, ERP and HR systems.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
