@@ -75,6 +75,22 @@ export function Footer({
                 Book a meeting
               </Link>
             </li>
+            <li>
+              <Link
+                href="/privacy"
+                className="text-neutral-700 hover:text-ink hover:underline"
+              >
+                Privacy policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/terms"
+                className="text-neutral-700 hover:text-ink hover:underline"
+              >
+                Terms &amp; conditions
+              </Link>
+            </li>
           </ul>
         </nav>
 
