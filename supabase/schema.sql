@@ -1192,4 +1192,4 @@ create policy "landing_page_events admin read" on public.landing_page_events
 
 drop trigger if exists landing_pages_updated_at on public.landing_pages;
 create trigger landing_pages_updated_at before update on public.landing_pages
-  for each row execute function public.touch_updated_at();
+  for each row execute function public.set_updated_at();
