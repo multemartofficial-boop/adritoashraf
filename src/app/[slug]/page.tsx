@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BadgeCheck, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  CheckCircle2,
+  CircleUserRound,
+} from "lucide-react";
 import {
   getAboutMe,
   getLandingPageBySlug,
@@ -9,7 +14,6 @@ import {
   getSiteSettings,
 } from "@/lib/data/public";
 import { reachFormId } from "@/lib/landing-page-shared";
-import { cn } from "@/lib/utils";
 import { FitImage } from "@/components/ui/fit-image";
 import { LpTracker } from "@/components/site/lp-tracker";
 
@@ -54,6 +58,8 @@ export async function generateMetadata({
   };
 }
 
+const WRAPPER = "w-full mx-auto max-w-7xl px-5 sm:px-8 lg:px-12";
+
 export default async function LandingPage({ params }: PageProps<"/[slug]">) {
   const { slug } = await params;
   const page = await getLandingPageBySlug(slug);
@@ -65,15 +71,19 @@ export default async function LandingPage({ params }: PageProps<"/[slug]">) {
   ]);
   const formId = reachFormId(page.form_embed);
   const stats = settings.about_stats.slice(0, 2);
-  const bioLine =
-    about.bio_1.split(". ")[0]?.trim() || about.role || settings.role;
+  const accent = page.heading?.accent ?? "";
+  const accentTail = accent.split(" ").pop() ?? "";
+  const accentHead = accent.slice(
+    0,
+    Math.max(0, accent.length - accentTail.length),
+  );
 
   return (
-    <div className="min-h-screen bg-ink text-white">
+    <div className="min-h-screen overflow-x-hidden bg-ink text-white">
       <LpTracker slug={page.slug} kind="view" />
 
-      {/* Minimal navbar — same container as the content */}
-      <header className="section-x mx-auto flex w-full max-w-6xl items-center justify-between py-4">
+      {/* Minimal navbar — same wrapper as the content */}
+      <header className={`${WRAPPER} flex items-center justify-between py-4`}>
         <Link
           href="/"
           className="flex items-center gap-2.5 font-semibold"
@@ -95,12 +105,18 @@ export default async function LandingPage({ params }: PageProps<"/[slug]">) {
         </Link>
       </header>
 
-      <main className="section-x mx-auto w-full max-w-6xl pb-14 pt-4 md:pt-8">
+      <main className={`${WRAPPER} relative pb-14`}>
+        {/* Soft glow behind the hero so the page doesn't feel empty */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 left-1/2 -z-0 h-[480px] w-[900px] max-w-none -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(124_77_255/0.22),rgb(247_143_208/0.07),transparent)] blur-3xl"
+        />
+
         {/*
-          DOM order matches mobile flow: intro -> cover -> bullets -> form -> host.
-          On lg the grid pins cover+form into the right column.
+          DOM order = mobile flow: intro -> form block -> bullets/trust.
+          On lg the grid pins the form block into the right column, vertically centered.
         */}
-        <div className="grid gap-8 lg:grid-cols-[55fr_45fr] lg:gap-x-14">
+        <div className="relative grid gap-10 py-8 md:py-10 lg:grid-cols-2 lg:items-center lg:gap-x-16 lg:py-16 xl:gap-20">
           {/* Intro — badge, headline, subheadline */}
           <div className="lg:col-start-1 lg:row-start-1">
             {page.pill_text && (
@@ -109,150 +125,164 @@ export default async function LandingPage({ params }: PageProps<"/[slug]">) {
                 {page.pill_text}
               </span>
             )}
-            <h1 className="mt-4 max-w-xl text-3xl leading-[1.12] font-semibold tracking-tight text-balance md:text-4xl lg:text-5xl">
-              {page.heading?.accent && (
-                <span className="text-orange">{page.heading.accent} </span>
-              )}
-              {page.heading?.strong && (
-                <span className="text-white">{page.heading.strong} </span>
-              )}
-              {page.heading?.muted && (
-                <span className="text-zinc-400">{page.heading.muted}</span>
-              )}
+            <h1 className="mt-5 max-w-2xl text-4xl leading-[1.05] font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+              {accentHead && <span className="text-white">{accentHead}</span>}
+              {accentTail && <span className="text-orange">{accentTail}</span>}
             </h1>
+            {(page.heading?.strong || page.heading?.muted) && (
+              <p className="mt-3 max-w-xl text-xl leading-snug font-medium md:text-2xl">
+                {page.heading?.strong && (
+                  <span className="text-white">{page.heading.strong} </span>
+                )}
+                {page.heading?.muted && (
+                  <span className="text-zinc-400">{page.heading.muted}</span>
+                )}
+              </p>
+            )}
             {page.subheadline && (
-              <p className="mt-4 max-w-xl text-base leading-relaxed text-zinc-400 lg:text-lg">
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-zinc-400">
                 {page.subheadline}
               </p>
             )}
           </div>
 
-          {/* Gift cover — mobile: compact + centered, lg: top of right column */}
-          <div className="flex justify-center lg:col-start-2 lg:row-start-1">
-            <div className="relative w-full max-w-[260px] lg:max-w-[340px]">
-              <div
-                className={cn(
-                  "relative h-[220px] w-full overflow-hidden rounded-2xl border border-white/10 shadow-[0_20px_60px_rgb(124_77_255/0.25)] lg:h-auto lg:aspect-[3/4] lg:rotate-[-2deg]",
-                  !page.cover_image &&
-                    "bg-[linear-gradient(145deg,#1c1040_0%,#4c2ea8_45%,#7C4DFF_75%,#F78FD0_115%)]",
-                )}
-              >
-                {page.cover_image ? (
-                  <FitImage
-                    src={page.cover_image}
-                    alt={page.internal_name}
-                    priority
-                    sizes="(max-width:1024px) 260px, 340px"
-                  />
-                ) : (
-                  <>
-                    <div className="absolute inset-0 bg-[repeating-linear-gradient(110deg,rgb(255_255_255/0.05)_0_2px,transparent_2px_16px)]" />
-                    <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#140b33]/95 via-[#140b33]/50 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-5">
-                      <p className="text-[10px] font-bold tracking-[0.18em] text-violet-200/80 uppercase">
-                        {page.pill_text || "Free download"}
-                      </p>
-                      <p className="mt-1.5 text-lg leading-snug font-bold text-white md:text-xl">
+          {/* Right column — form card with the gift cover overlapping the corner */}
+          <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+            <div className="relative mx-auto w-full max-w-md lg:ml-auto">
+              {/* Mini book mockup overlapping the card corner */}
+              <div className="absolute -top-8 -right-3 z-10 w-28 rotate-6 sm:w-32 md:-right-6">
+                <div
+                  className={`relative aspect-[3/4] overflow-hidden rounded-xl border border-white/15 shadow-[0_16px_40px_rgb(124_77_255/0.35)] ${
+                    page.cover_image
+                      ? ""
+                      : "bg-[linear-gradient(145deg,#1c1040_0%,#4c2ea8_45%,#7C4DFF_75%,#F78FD0_115%)]"
+                  }`}
+                >
+                  {page.cover_image ? (
+                    <FitImage
+                      src={page.cover_image}
+                      alt={page.internal_name}
+                      priority
+                      sizes="9rem"
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 bg-[repeating-linear-gradient(110deg,rgb(255_255_255/0.05)_0_2px,transparent_2px_14px)]" />
+                      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#140b33]/95 via-[#140b33]/40 to-transparent" />
+                      <p className="absolute inset-x-0 bottom-0 line-clamp-3 p-3 text-[13px] leading-snug font-bold text-white">
                         {page.internal_name}
                       </p>
-                    </div>
-                  </>
+                    </>
+                  )}
+                </div>
+                {page.cover_tag && (
+                  <span className="bg-orange-pill absolute -top-2 -right-2 rounded-full px-2.5 py-1 text-[10px] font-bold text-ink shadow-lg">
+                    {page.cover_tag}
+                  </span>
                 )}
               </div>
-              {page.cover_tag && (
-                <span className="bg-orange-pill absolute -top-2.5 -right-2.5 rounded-full px-3.5 py-1.5 text-xs font-bold text-ink shadow-lg lg:top-4 lg:-right-3.5">
-                  {page.cover_tag}
-                </span>
-              )}
+
+              {/* Form card */}
+              <div className="rounded-3xl border border-white/10 bg-[linear-gradient(160deg,rgb(124_77_255/0.10),rgb(255_255_255/0.03)_55%)] p-6 pt-10 shadow-[0_24px_70px_rgb(124_77_255/0.18)] md:p-8">
+                {page.cta_label && (
+                  <p className="mb-4 flex items-center gap-2 text-base font-semibold">
+                    <BadgeCheck className="size-5 shrink-0 text-violet" />{" "}
+                    {page.cta_label}
+                  </p>
+                )}
+                {formId ? (
+                  <div
+                    className="min-h-[460px] w-full min-w-0 overflow-hidden rounded-xl [&_iframe]:w-full [&_iframe]:min-w-0"
+                    data-reach-form={formId}
+                  />
+                ) : (
+                  <div className="grid min-h-[200px] place-items-center text-sm text-white/40">
+                    Registration form coming soon.
+                  </div>
+                )}
+                {page.privacy_line && (
+                  <p className="mt-4 text-sm text-zinc-400">
+                    {page.privacy_line}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Bullets + who-it's-for — left column */}
+          {/* Bullets + audience + trust strip — bottom-left on desktop */}
           <div className="lg:col-start-1 lg:row-start-2">
             {page.bullets.length > 0 && (
-              <ul className="max-w-md space-y-3">
+              <ul className="max-w-xl space-y-3">
                 {page.bullets.map((b, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2.5 text-sm text-zinc-300 md:text-base"
+                    className="flex items-start gap-2.5 text-base text-zinc-300"
                   >
-                    <CheckCircle2 className="mt-0.5 size-4.5 shrink-0 text-orange" />
+                    <CheckCircle2 className="mt-1 size-4.5 shrink-0 text-orange" />
                     <span>{b}</span>
                   </li>
                 ))}
               </ul>
             )}
             {page.audience_line && (
-              <p className="mt-5 max-w-md text-xs text-zinc-500 italic md:text-sm">
+              <p className="mt-6 max-w-xl border-l-2 border-violet/50 pl-4 text-sm leading-relaxed text-zinc-400">
                 {page.audience_line}
               </p>
             )}
-          </div>
 
-          {/* Form card — right column under the cover */}
-          <div className="lg:col-start-2 lg:row-start-2">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 md:p-6 lg:sticky lg:top-6">
-              {page.cta_label && (
-                <p className="mb-4 flex items-center gap-2 text-base font-semibold">
-                  <BadgeCheck className="size-5 text-violet" /> {page.cta_label}
-                </p>
-              )}
-              {formId ? (
-                <div
-                  className="overflow-hidden [&_iframe]:w-full"
-                  data-reach-form={formId}
-                />
-              ) : (
-                <p className="text-sm text-white/40">
-                  Registration form coming soon.
-                </p>
-              )}
-              {page.privacy_line && (
-                <p className="mt-4 text-sm text-zinc-400">
-                  {page.privacy_line}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Host / trust card — full width of the grid */}
-          <div className="lg:col-span-2 lg:row-start-3">
-            <div className="glass rounded-2xl p-5 md:p-7">
-              <div className="flex items-start gap-4">
-                <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl bg-violet/15 md:size-[4.5rem]">
-                  {about.image_url && (
+            {/* Compact trust strip */}
+            <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-violet/15 ring-1 ring-violet/40">
+                  {about.image_url ? (
                     <FitImage
                       src={about.image_url}
                       alt={settings.owner_name}
-                      sizes="4.5rem"
+                      sizes="3rem"
                     />
+                  ) : (
+                    <CircleUserRound className="size-full p-2 text-violet" />
                   )}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">{settings.owner_name}</p>
-                  <p className="text-xs text-violet-200/80 md:text-sm">
+                <p className="min-w-0 text-sm leading-snug">
+                  <span className="block font-semibold">
+                    {settings.owner_name}
+                  </span>
+                  <span className="block text-zinc-400">
                     {about.role || settings.role}
-                  </p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">
-                    {bioLine}
-                  </p>
-                </div>
+                  </span>
+                </p>
               </div>
-              {stats.length > 0 && (
-                <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
-                  {stats.map((s, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs text-zinc-300 md:text-sm"
-                    >
-                      <span className="font-bold text-white">{s.value}</span>
-                      <span>{s.label}</span>
-                    </span>
-                  ))}
-                </div>
-              )}
+              {stats.map((s, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-3.5 py-1.5 text-xs text-zinc-300 md:text-sm"
+                >
+                  <span className="font-bold text-white">{s.value}</span>{" "}
+                  {s.label}
+                </span>
+              ))}
             </div>
           </div>
+        </div>
+
+        {/* Subtle "how it works" strip */}
+        <div className="relative mx-auto max-w-3xl">
+          <ol className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center text-xs text-zinc-500 md:text-sm">
+            {[
+              "Enter your email",
+              "Get the checklist instantly",
+              "Book a free call if you want help",
+            ].map((step, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <span className="grid size-5 place-items-center rounded-full bg-violet/25 text-[10px] font-bold text-lavender">
+                  {i + 1}
+                </span>
+                {step}
+                {i < 2 && <span className="text-zinc-600">·</span>}
+              </li>
+            ))}
+          </ol>
         </div>
       </main>
     </div>
