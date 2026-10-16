@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, Loader2, LogOut } from "lucide-react";
+import { LayoutGrid, LogOut } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { memberLogoutAction } from "@/lib/auth/member-actions";
 import {
@@ -50,7 +50,7 @@ function useMemberUser() {
   return { user, ready };
 }
 
-function LogoutItem({ onDone }: { onDone?: () => void }) {
+function LogoutItem() {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   return (
@@ -62,7 +62,6 @@ function LogoutItem({ onDone }: { onDone?: () => void }) {
         startTransition(async () => {
           await memberLogoutAction();
           router.refresh();
-          onDone?.();
         });
       }}
     >
@@ -71,17 +70,16 @@ function LogoutItem({ onDone }: { onDone?: () => void }) {
   );
 }
 
-/** Desktop pill slot: quiet "Log in" link, or avatar + dropdown when signed in. */
+/** Right-side slot of the pill: quiet "Log in" link, or the purple avatar + dropdown when signed in. */
 export function NavAuth() {
   const { user, ready } = useMemberUser();
-  if (!ready)
-    return <span aria-hidden className="hidden size-9 lg:inline-block" />;
+  if (!ready) return <span aria-hidden className="inline-block size-10" />;
 
   if (!user) {
     return (
       <Link
         href="/login"
-        className="hidden rounded-full px-4 py-2 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white lg:block"
+        className="rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-[#A1A1B5] transition-colors hover:text-white"
       >
         Log in
       </Link>
@@ -91,7 +89,7 @@ export function NavAuth() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="hidden size-9 place-items-center rounded-full bg-[linear-gradient(135deg,var(--violet),#b44cff)] text-sm font-bold text-white ring-2 ring-white/25 transition-transform duration-200 hover:scale-105 lg:grid"
+        className="grid size-10 place-items-center rounded-full bg-[#7C4DFF] text-sm font-bold text-white ring-2 ring-[#B794FF]/50 transition-all duration-200 hover:scale-105 hover:ring-[#B794FF]"
         aria-label="Account menu"
       >
         {user.name.charAt(0).toUpperCase()}
@@ -113,65 +111,5 @@ export function NavAuth() {
         <LogoutItem />
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-/** Mobile menu rows: Login link, or My Webinars + Logout when signed in. */
-export function MobileNavAuth({ onNavigate }: { onNavigate?: () => void }) {
-  const { user, ready } = useMemberUser();
-  const [pending, startTransition] = useTransition();
-  const router = useRouter();
-  if (!ready) return null;
-
-  if (!user) {
-    return (
-      <li>
-        <Link
-          href="/login"
-          onClick={onNavigate}
-          className="block rounded-2xl px-4 py-3 text-base text-white/85 hover:bg-white/10"
-        >
-          Log in
-        </Link>
-      </li>
-    );
-  }
-
-  return (
-    <>
-      <li>
-        <Link
-          href="/dashboard"
-          onClick={onNavigate}
-          className="flex items-center gap-2.5 rounded-2xl px-4 py-3 text-base text-white/85 hover:bg-white/10"
-        >
-          <span className="grid size-6 place-items-center rounded-full bg-[linear-gradient(135deg,var(--violet),#b44cff)] text-[11px] font-bold">
-            {user.name.charAt(0).toUpperCase()}
-          </span>
-          My Webinars
-        </Link>
-      </li>
-      <li>
-        <button
-          type="button"
-          disabled={pending}
-          onClick={() =>
-            startTransition(async () => {
-              await memberLogoutAction();
-              router.refresh();
-              onNavigate?.();
-            })
-          }
-          className="flex w-full items-center gap-2.5 rounded-2xl px-4 py-3 text-left text-base text-white/60 hover:bg-white/10 disabled:opacity-50"
-        >
-          {pending ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <LogOut className="size-4" />
-          )}
-          Log out
-        </button>
-      </li>
-    </>
   );
 }
