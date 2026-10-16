@@ -1,7 +1,13 @@
 // Hand-maintained to mirror supabase/schema.sql. If you later use the Supabase CLI,
 // `supabase gen types typescript` can replace this file.
 
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
 export type TestimonialType = "text" | "video";
@@ -35,7 +41,8 @@ export type AboutHeading = {
   strong?: string;
   muted?: string;
 };
-export type SectionKey = "portfolio" | "services" | "process" | "testimonials" | "booking" | "faq";
+export type SectionKey =
+  "portfolio" | "services" | "process" | "testimonials" | "booking" | "faq";
 export type SectionText = AboutHeading & { tag?: string; description?: string };
 export type SectionTexts = Partial<Record<SectionKey, SectionText>>;
 
@@ -275,6 +282,53 @@ export type RedirectRow = {
   updated_at: string;
 };
 
+export type ProfileRole = "user" | "admin";
+
+export type ProfileRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  role: ProfileRole;
+  created_at: string;
+  updated_at: string;
+};
+
+export type WebinarStatus = "draft" | "published";
+
+export type WebinarRow = {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  thumbnail_url: string;
+  start_at: string | null;
+  end_at: string | null;
+  live_url: string;
+  recording_url: string;
+  status: WebinarStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type WebinarResourceRow = {
+  id: string;
+  webinar_id: string;
+  title: string;
+  file_url: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type WebinarAccessRow = {
+  id: string;
+  webinar_id: string;
+  email: string;
+  user_id: string | null;
+  granted_at: string;
+  granted_by: string | null;
+};
+
 export type DashboardStateRow = {
   key: string;
   value: Json;
@@ -289,9 +343,14 @@ export type RateLimitRow = {
 
 type ServerManaged = "created_at" | "updated_at";
 
-type Table<Row, Required extends keyof Row, Generated extends keyof Row = never> = {
+type Table<
+  Row,
+  Required extends keyof Row,
+  Generated extends keyof Row = never,
+> = {
   Row: Row;
-  Insert: Pick<Row, Required> & Partial<Omit<Row, Required | Generated | ServerManaged>>;
+  Insert: Pick<Row, Required> &
+    Partial<Omit<Row, Required | Generated | ServerManaged>>;
   Update: Partial<Omit<Row, Generated | ServerManaged>>;
   Relationships: [];
 };
@@ -308,7 +367,11 @@ export type Database = {
       process_steps: Table<ProcessStepRow, "title", "id">;
       testimonials: Table<TestimonialRow, "client_name", "id">;
       faqs: Table<FaqRow, "question", "id">;
-      availability_rules: Table<AvailabilityRuleRow, "weekday" | "start_time" | "end_time", "id">;
+      availability_rules: Table<
+        AvailabilityRuleRow,
+        "weekday" | "start_time" | "end_time",
+        "id"
+      >;
       blocked_dates: Table<BlockedDateRow, "date", "id">;
       booking_settings: Table<BookingSettingsRow, never>;
       bookings: Table<
@@ -323,15 +386,33 @@ export type Database = {
         | "manage_token_hash",
         "id"
       >;
-      email_templates: Table<EmailTemplateRow, "type" | "subject" | "body_html" | "body_text", "id">;
+      email_templates: Table<
+        EmailTemplateRow,
+        "type" | "subject" | "body_html" | "body_text",
+        "id"
+      >;
       redirects: Table<RedirectRow, "from_path" | "to_path", "id">;
       dashboard_state: Table<DashboardStateRow, "key">;
       rate_limits: Table<RateLimitRow, "key">;
       signup_allowlist: Table<{ email: string; created_at: string }, "email">;
+      profiles: Table<ProfileRow, "id", never>;
+      webinars: Table<WebinarRow, "title" | "slug", "id">;
+      webinar_resources: Table<
+        WebinarResourceRow,
+        "webinar_id" | "title" | "file_url",
+        "id"
+      >;
+      webinar_access: Table<
+        WebinarAccessRow,
+        "webinar_id" | "email",
+        "id" | "granted_at"
+      >;
     };
     Views: { [_ in never]: never };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      has_admin_role: { Args: Record<string, never>; Returns: boolean };
+      has_webinar_access: { Args: { p_webinar_id: string }; Returns: boolean };
       hit_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;

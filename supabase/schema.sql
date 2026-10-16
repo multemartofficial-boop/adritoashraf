@@ -74,10 +74,11 @@ begin
 end;
 $$;
 
+-- Member sign-ups are open to the public (webinar members area). The allowlist
+-- table + function stay in place; to re-enable invite-only sign-ups, recreate:
+--   create trigger enforce_signup_allowlist before insert on auth.users
+--     for each row execute function public.enforce_signup_allowlist();
 drop trigger if exists enforce_signup_allowlist on auth.users;
-create trigger enforce_signup_allowlist
-  before insert on auth.users
-  for each row execute function public.enforce_signup_allowlist();
 
 -- -----------------------------------------------------------------------------
 -- site_settings: single row (id = 1) with all public site text
@@ -1099,4 +1100,213 @@ on conflict (type) do nothing;
 --    insert into public.admins (user_id, email, name)
 --    select id, email, 'Adrito Ashraf' from auth.users where email = 'you@example.com'
 --    on conflict (user_id) do nothing;
+-- =============================================================================
+
+
+-- =============================================================================
+-- MEMBER ACCOUNTS + WEBINARS
+-- =============================================================================
+
+-- profiles: one row per auth user, created automatically by trigger. role is
+-- only ever set server-side (SQL or service role) — never trusted from clients.
+create table if not exists public.profiles (
+  id         uuid primary key references auth.users (id) on delete cascade,
+  full_name  text not null default '',
+  email      text not null unique check (email = lower(email)),
+  role       text not null default 'user' check (role in ('user', 'admin')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create or replace function public.handle_new_profile()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email, full_name)
+  values (new.id, lower(new.email), coalesce(new.raw_user_meta_data ->> 'full_name', ''))
+  on conflict (id) do update set email = excluded.email;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_profile();
+
+-- Backfill profiles for auth users created before this trigger existed.
+insert into public.profiles (id, email, full_name)
+select id, lower(email), coalesce(raw_user_meta_data ->> 'full_name', '')
+from auth.users
+on conflict (id) do nothing;
+
+-- is_admin() stays the source of truth for /admin. has_admin_role() additionally
+-- honours profiles.role = 'admin' so member-area admin rights follow profiles.
+create or replace function public.has_admin_role()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select public.is_admin()
+      or exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
+$$;
+
+create table if not exists public.webinars (
+  id            uuid primary key default gen_random_uuid(),
+  title         text not null,
+  slug          text not null unique check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
+  description   text not null default '',
+  thumbnail_url text not null default '',
+  start_at      timestamptz,
+  end_at        timestamptz,
+  live_url      text not null default '',
+  recording_url text not null default '',
+  status        text not null default 'draft' check (status in ('draft', 'published')),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+create index if not exists webinars_start_idx on public.webinars (start_at);
+
+create table if not exists public.webinar_resources (
+  id         uuid primary key default gen_random_uuid(),
+  webinar_id uuid not null references public.webinars (id) on delete cascade,
+  title      text not null,
+  -- External https URL, or a private-bucket storage path (webinars/<id>/<file>).
+  file_url   text not null,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists webinar_resources_webinar_idx on public.webinar_resources (webinar_id, sort_order);
+
+-- Access is granted BY EMAIL and linked to a profile automatically (signup can
+-- happen before or after the grant; matching is case-insensitive).
+create table if not exists public.webinar_access (
+  id         uuid primary key default gen_random_uuid(),
+  webinar_id uuid not null references public.webinars (id) on delete cascade,
+  email      text not null check (email = lower(email)),
+  user_id    uuid references public.profiles (id) on delete set null,
+  granted_at timestamptz not null default now(),
+  granted_by uuid references auth.users (id) on delete set null,
+  unique (webinar_id, email)
+);
+create index if not exists webinar_access_email_idx on public.webinar_access (email);
+create index if not exists webinar_access_user_idx on public.webinar_access (user_id);
+
+-- Keep email lowercased and attach the matching profile when one already exists.
+create or replace function public.link_access_profile()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  new.email := lower(new.email);
+  new.user_id := (select id from public.profiles where email = new.email);
+  return new;
+end;
+$$;
+
+drop trigger if exists link_access_profile on public.webinar_access;
+create trigger link_access_profile
+  before insert or update of email on public.webinar_access
+  for each row execute function public.link_access_profile();
+
+-- When someone signs up after being granted access, link them immediately.
+create or replace function public.link_access_on_signup()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.webinar_access set user_id = new.id where user_id is null and email = new.email;
+  return new;
+end;
+$$;
+
+drop trigger if exists link_access_on_signup on public.profiles;
+create trigger link_access_on_signup
+  after insert on public.profiles
+  for each row execute function public.link_access_on_signup();
+
+-- Member-facing access check. SECURITY DEFINER so the webinars/resources policies
+-- can test webinar_access without that table's own RLS interfering.
+create or replace function public.has_webinar_access(p_webinar_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.webinar_access wa
+    join public.webinars w on w.id = wa.webinar_id
+    where wa.webinar_id = p_webinar_id
+      and w.status = 'published'
+      and (wa.user_id = auth.uid() or wa.email = lower(coalesce(auth.jwt() ->> 'email', '')))
+  );
+$$;
+
+drop trigger if exists set_updated_at on public.profiles;
+create trigger set_updated_at before update on public.profiles for each row execute function public.set_updated_at();
+drop trigger if exists set_updated_at on public.webinars;
+create trigger set_updated_at before update on public.webinars for each row execute function public.set_updated_at();
+drop trigger if exists set_updated_at on public.webinar_resources;
+create trigger set_updated_at before update on public.webinar_resources for each row execute function public.set_updated_at();
+
+-- -----------------------------------------------------------------------------
+-- RLS
+-- -----------------------------------------------------------------------------
+alter table public.profiles enable row level security;
+alter table public.webinars enable row level security;
+alter table public.webinar_resources enable row level security;
+alter table public.webinar_access enable row level security;
+
+-- profiles: read your own row; admins (admins table OR profiles.role) see all.
+drop policy if exists "self read" on public.profiles;
+create policy "self read" on public.profiles
+  for select to authenticated using (id = auth.uid() or public.has_admin_role());
+drop policy if exists "admin write" on public.profiles;
+create policy "admin write" on public.profiles
+  for all to authenticated using (public.has_admin_role()) with check (public.has_admin_role());
+
+-- webinars: members only see published webinars they have an access row for;
+-- recording/live URLs never reach users without a grant.
+drop policy if exists "member read granted" on public.webinars;
+create policy "member read granted" on public.webinars
+  for select to authenticated using (public.has_webinar_access(id) or public.has_admin_role());
+drop policy if exists "admin write" on public.webinars;
+create policy "admin write" on public.webinars
+  for all to authenticated using (public.has_admin_role()) with check (public.has_admin_role());
+
+-- resources follow their webinar's access.
+drop policy if exists "member read granted" on public.webinar_resources;
+create policy "member read granted" on public.webinar_resources
+  for select to authenticated using (public.has_webinar_access(webinar_id) or public.has_admin_role());
+drop policy if exists "admin write" on public.webinar_resources;
+create policy "admin write" on public.webinar_resources
+  for all to authenticated using (public.has_admin_role()) with check (public.has_admin_role());
+
+-- access rows: members can see their own grants, admins manage everything.
+drop policy if exists "member read own" on public.webinar_access;
+create policy "member read own" on public.webinar_access
+  for select to authenticated
+  using (user_id = auth.uid() or email = lower(coalesce(auth.jwt() ->> 'email', '')) or public.has_admin_role());
+drop policy if exists "admin write" on public.webinar_access;
+create policy "admin write" on public.webinar_access
+  for all to authenticated using (public.has_admin_role()) with check (public.has_admin_role());
+
+-- =============================================================================
+-- SEEDING YOUR ADMIN MEMBER ACCOUNT (after running this file):
+--   Option A (recommended — you already are an /admin user): nothing to do,
+--     the admins table row already grants webinar admin rights.
+--   Option B: sign up at /signup with your email, then run:
+--     update public.profiles set role = 'admin' where email = 'you@example.com';
 -- =============================================================================

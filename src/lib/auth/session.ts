@@ -32,7 +32,12 @@ export const getAdminSession = cache(async (): Promise<AdminSession | null> => {
     .maybeSingle();
   if (!admin) return null;
 
-  return { userId: admin.user_id, email: admin.email, name: admin.name, supabase };
+  return {
+    userId: admin.user_id,
+    email: admin.email,
+    name: admin.name,
+    supabase,
+  };
 });
 
 /** For pages/layouts: redirects to the login page when not an admin. */
@@ -45,6 +50,53 @@ export async function requireAdmin(): Promise<AdminSession> {
 /** For server actions and API routes: throws UnauthorizedError when not an admin. */
 export async function requireAdminAction(): Promise<AdminSession> {
   const session = await getAdminSession();
+  if (!session) throw new UnauthorizedError();
+  return session;
+}
+
+// ---------------------------------------------------------------------------
+// Member sessions (webinar area) — any authenticated user, no admin check.
+// ---------------------------------------------------------------------------
+export type MemberSession = {
+  userId: string;
+  email: string;
+  name: string;
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
+};
+
+export const getMemberSession = cache(
+  async (): Promise<MemberSession | null> => {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    return {
+      userId: user.id,
+      email: user.email ?? "",
+      name: profile?.full_name || user.email?.split("@")[0] || "Member",
+      supabase,
+    };
+  },
+);
+
+/** For member pages/layouts: redirects to /login when signed out. */
+export async function requireMember(): Promise<MemberSession> {
+  const session = await getMemberSession();
+  if (!session) redirect("/login");
+  return session;
+}
+
+/** For member server actions: throws UnauthorizedError when signed out. */
+export async function requireMemberAction(): Promise<MemberSession> {
+  const session = await getMemberSession();
   if (!session) throw new UnauthorizedError();
   return session;
 }

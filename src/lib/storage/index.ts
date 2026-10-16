@@ -1,14 +1,30 @@
 import "server-only";
 import { serverEnv } from "@/lib/env/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { ATTACHMENT_TYPES, IMAGE_TYPES, validateUpload, type AllowedMime } from "./validate";
+import {
+  ATTACHMENT_TYPES,
+  IMAGE_TYPES,
+  validateUpload,
+  type AllowedMime,
+} from "./validate";
 
-export type StoredObject = { path: string; url: string; size: number; mime: string; createdAt: string | null };
+export type StoredObject = {
+  path: string;
+  url: string;
+  size: number;
+  mime: string;
+  createdAt: string | null;
+};
 export type BucketKind = "public" | "private";
 
 // Swap this interface's implementation to move off Supabase Storage (e.g. S3, local disk).
 export interface StorageProvider {
-  put(kind: BucketKind, path: string, bytes: Uint8Array, mime: AllowedMime): Promise<void>;
+  put(
+    kind: BucketKind,
+    path: string,
+    bytes: Uint8Array,
+    mime: AllowedMime,
+  ): Promise<void>;
   remove(kind: BucketKind, paths: string[]): Promise<void>;
   list(kind: BucketKind, prefix: string): Promise<StoredObject[]>;
   publicUrl(path: string): string;
@@ -21,7 +37,11 @@ export interface StorageProvider {
 function supabaseStorage(): StorageProvider {
   const env = serverEnv();
   const bucket = (kind: BucketKind) =>
-    supabaseAdmin().storage.from(kind === "public" ? env.STORAGE_PUBLIC_BUCKET : env.STORAGE_PRIVATE_BUCKET);
+    supabaseAdmin().storage.from(
+      kind === "public"
+        ? env.STORAGE_PUBLIC_BUCKET
+        : env.STORAGE_PRIVATE_BUCKET,
+    );
 
   const provider: StorageProvider = {
     async put(kind, path, bytes, mime) {
@@ -60,17 +80,27 @@ function supabaseStorage(): StorageProvider {
       return bucket("public").getPublicUrl(path).data.publicUrl;
     },
     async signedUrl(path, expiresInSeconds = 300) {
-      const { data, error } = await bucket("private").createSignedUrl(path, expiresInSeconds);
+      const { data, error } = await bucket("private").createSignedUrl(
+        path,
+        expiresInSeconds,
+      );
       if (error) throw new Error(`Signed URL failed: ${error.message}`);
       return data.signedUrl;
     },
     async usageBytes(kind) {
       // Uploads are stored one folder deep (`folder/file`), so two levels cover everything.
-      const { data: root, error } = await bucket(kind).list("", { limit: 1000 });
+      const { data: root, error } = await bucket(kind).list("", {
+        limit: 1000,
+      });
       if (error) throw new Error(`Storage list failed: ${error.message}`);
       const folders = root.filter((o) => !o.id).map((o) => o.name);
-      const rootBytes = root.reduce((sum, o) => sum + Number(o.metadata?.size ?? 0), 0);
-      const nested = await Promise.all(folders.map((f) => provider.list(kind, f)));
+      const rootBytes = root.reduce(
+        (sum, o) => sum + Number(o.metadata?.size ?? 0),
+        0,
+      );
+      const nested = await Promise.all(
+        folders.map((f) => provider.list(kind, f)),
+      );
       return rootBytes + nested.flat().reduce((sum, o) => sum + o.size, 0);
     },
   };
@@ -85,7 +115,15 @@ export function storage(): StorageProvider {
 
 const randomName = (ext: string) => `${crypto.randomUUID()}.${ext}`;
 
-export const MEDIA_FOLDERS = ["projects", "services", "testimonials", "site", "media", "about"] as const;
+export const MEDIA_FOLDERS = [
+  "projects",
+  "services",
+  "testimonials",
+  "site",
+  "media",
+  "about",
+  "webinars",
+] as const;
 export type MediaFolder = (typeof MEDIA_FOLDERS)[number];
 
 /** Storage path for a public-bucket URL we issued, or null for anything else. */
@@ -109,8 +147,13 @@ export function isSafeMediaPath(path: string): boolean {
 
 /** Best-effort delete of uploaded files referenced by URL (ignores foreign URLs). */
 export async function removePublicFilesByUrl(urls: string[]) {
-  const paths = urls.map(publicPathFromUrl).filter((p): p is string => Boolean(p));
-  if (paths.length) await storage().remove("public", paths).catch((e) => console.error("[storage cleanup]", e));
+  const paths = urls
+    .map(publicPathFromUrl)
+    .filter((p): p is string => Boolean(p));
+  if (paths.length)
+    await storage()
+      .remove("public", paths)
+      .catch((e) => console.error("[storage cleanup]", e));
 }
 
 /** Validate + upload a site file (image or PDF) to the public bucket. Returns its public URL and path. */
