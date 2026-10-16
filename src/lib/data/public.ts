@@ -157,3 +157,17 @@ export const getPublishedLandingPageSlugs = cache(
     return (data ?? []).map((r) => r.slug);
   },
 );
+
+export const getPublishedLandingPages = cache(
+  async (): Promise<
+    Pick<LandingPageRow, "slug" | "internal_name" | "pill_text">[]
+  > => {
+    const { data, error } = await supabasePublic()
+      .from("landing_pages")
+      .select("slug, internal_name, pill_text")
+      .eq("status", "published")
+      .order("created_at");
+    logError("landing_pages list", error);
+    return data ?? [];
+  },
+);

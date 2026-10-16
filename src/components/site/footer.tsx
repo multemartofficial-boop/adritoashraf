@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { SiteSettingsRow } from "@/types/database";
-import type { ProjectCard } from "@/lib/data/public";
+import { getPublishedLandingPages, type ProjectCard } from "@/lib/data/public";
 import { SOCIAL_LABEL, SocialIcon } from "./social-icon";
 
 const resolve = (href: string) => (href.startsWith("#") ? `/${href}` : href);
 
-export function Footer({
+export async function Footer({
   settings: s,
   projects,
 }: {
@@ -13,6 +13,7 @@ export function Footer({
   projects: ProjectCard[];
 }) {
   const socials = s.social_links.filter((l) => l.url);
+  const giftPages = await getPublishedLandingPages();
   const year = new Date().getFullYear();
 
   return (
@@ -75,6 +76,16 @@ export function Footer({
                 Book a meeting
               </Link>
             </li>
+            {giftPages.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={`/${p.slug}`}
+                  className="text-neutral-700 hover:text-ink hover:underline"
+                >
+                  {p.internal_name || "Free gift"}
+                </Link>
+              </li>
+            ))}
             <li>
               <Link
                 href="/privacy"

@@ -12,6 +12,7 @@ import { WebinarBadge } from "@/components/site/webinar-badge";
 import { About } from "@/components/sections/about";
 import { AboutMe } from "@/components/sections/about-me";
 import { BookingCta } from "@/components/sections/booking-cta";
+import { GiftCta } from "@/components/sections/gift-cta";
 import { Faq } from "@/components/sections/faq";
 import { Hero } from "@/components/sections/hero";
 import { Portfolio } from "@/components/sections/portfolio";
@@ -67,6 +68,7 @@ export default async function HomePage() {
       <Process steps={steps} text={t.process} />
       <Testimonials items={testimonials} text={t.testimonials} />
       <BookingCta text={t.booking} ownerName={settings.owner_name} />
+      <GiftCta />
       <Faq faqs={faqs} text={t.faq} contactEmail={settings.contact_email} />
       <WebinarBadge />
     </>
