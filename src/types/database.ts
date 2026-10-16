@@ -282,51 +282,49 @@ export type RedirectRow = {
   updated_at: string;
 };
 
-export type ProfileRole = "user" | "admin";
+export type LandingPageStatus = "draft" | "published";
+export type GiftType = "pdf" | "link" | "video";
 
-export type ProfileRow = {
+export type LandingPageRow = {
   id: string;
-  full_name: string;
-  email: string;
-  role: ProfileRole;
-  created_at: string;
-  updated_at: string;
-};
-
-export type WebinarStatus = "draft" | "published";
-
-export type WebinarRow = {
-  id: string;
-  title: string;
+  type: "free_gift";
+  internal_name: string;
   slug: string;
-  description: string;
-  thumbnail_url: string;
-  start_at: string | null;
-  end_at: string | null;
-  live_url: string;
-  recording_url: string;
-  status: WebinarStatus;
+  status: LandingPageStatus;
+  pill_text: string;
+  heading: AboutHeading;
+  subheadline: string;
+  bullets: string[];
+  audience_line: string;
+  cover_image: string;
+  cover_tag: string;
+  cta_label: string;
+  privacy_line: string;
+  form_embed: string;
+  gift_type: GiftType;
+  gift_file: string;
+  gift_url: string;
+  thank_you_title: string;
+  thank_you_text: string;
+  next_step_label: string;
+  next_step_href: string;
+  seo_title: string;
+  seo_description: string;
+  og_image: string;
+  view_count: number;
+  thankyou_count: number;
   created_at: string;
   updated_at: string;
 };
 
-export type WebinarResourceRow = {
+export type LandingPageEventRow = {
   id: string;
-  webinar_id: string;
-  title: string;
-  file_url: string;
-  sort_order: number;
+  page_id: string;
+  kind: "view" | "thankyou";
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
   created_at: string;
-  updated_at: string;
-};
-
-export type WebinarAccessRow = {
-  id: string;
-  webinar_id: string;
-  email: string;
-  user_id: string | null;
-  granted_at: string;
-  granted_by: string | null;
 };
 
 export type DashboardStateRow = {
@@ -395,24 +393,24 @@ export type Database = {
       dashboard_state: Table<DashboardStateRow, "key">;
       rate_limits: Table<RateLimitRow, "key">;
       signup_allowlist: Table<{ email: string; created_at: string }, "email">;
-      profiles: Table<ProfileRow, "id", never>;
-      webinars: Table<WebinarRow, "title" | "slug", "id">;
-      webinar_resources: Table<
-        WebinarResourceRow,
-        "webinar_id" | "title" | "file_url",
-        "id"
+      landing_pages: Table<
+        LandingPageRow,
+        "slug",
+        "id" | "view_count" | "thankyou_count"
       >;
-      webinar_access: Table<
-        WebinarAccessRow,
-        "webinar_id" | "email",
-        "id" | "granted_at"
+      landing_page_events: Table<
+        LandingPageEventRow,
+        "page_id" | "kind",
+        "id" | "created_at"
       >;
     };
     Views: { [_ in never]: never };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
-      has_admin_role: { Args: Record<string, never>; Returns: boolean };
-      has_webinar_access: { Args: { p_webinar_id: string }; Returns: boolean };
+      increment_lp_counter: {
+        Args: { p_slug: string; p_kind: string };
+        Returns: undefined;
+      };
       hit_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;

@@ -6,17 +6,16 @@ import {
   CalendarOff,
   Clock,
   FolderKanban,
+  Gift,
   HelpCircle,
   Images,
   LayoutDashboard,
   ListOrdered,
   Mail,
   MessageSquareQuote,
-  Presentation,
   Settings,
   ShieldCheck,
   UserRound,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -33,6 +32,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Overview", href: "/admin", icon: LayoutDashboard },
       { label: "Projects", href: "/admin/projects", icon: FolderKanban },
+      { label: "Gift Pages", href: "/admin/landing-pages", icon: Gift },
       { label: "Services", href: "/admin/services", icon: Briefcase },
       {
         label: "Testimonials",
@@ -43,13 +43,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "FAQs", href: "/admin/faqs", icon: HelpCircle },
       { label: "About Me", href: "/admin/about-me", icon: UserRound },
       { label: "Site Settings", href: "/admin/settings", icon: Settings },
-    ],
-  },
-  {
-    label: "Members",
-    items: [
-      { label: "Webinars", href: "/admin/webinars", icon: Presentation },
-      { label: "Members", href: "/admin/users", icon: Users },
     ],
   },
   {

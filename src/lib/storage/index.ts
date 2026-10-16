@@ -122,7 +122,7 @@ export const MEDIA_FOLDERS = [
   "site",
   "media",
   "about",
-  "webinars",
+  "gifts",
 ] as const;
 export type MediaFolder = (typeof MEDIA_FOLDERS)[number];
 

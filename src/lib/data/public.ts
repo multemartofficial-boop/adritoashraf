@@ -5,6 +5,7 @@ import { DEFAULT_ABOUT_ME, DEFAULT_SITE_SETTINGS } from "@/lib/site-config";
 import type {
   AboutMeRow,
   FaqRow,
+  LandingPageRow,
   ProcessStepRow,
   ProjectImageRow,
   ProjectRow,
@@ -21,13 +22,21 @@ function logError(scope: string, error: unknown) {
 }
 
 export const getSiteSettings = cache(async (): Promise<SiteSettingsRow> => {
-  const { data, error } = await supabasePublic().from("site_settings").select("*").eq("id", 1).maybeSingle();
+  const { data, error } = await supabasePublic()
+    .from("site_settings")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
   logError("site_settings", error);
   return data ? { ...DEFAULT_SITE_SETTINGS, ...data } : DEFAULT_SITE_SETTINGS;
 });
 
 export const getAboutMe = cache(async (): Promise<AboutMeRow> => {
-  const { data, error } = await supabasePublic().from("about_me").select("*").eq("id", 1).maybeSingle();
+  const { data, error } = await supabasePublic()
+    .from("about_me")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
   logError("about_me", error);
   return data ? { ...DEFAULT_ABOUT_ME, ...data } : DEFAULT_ABOUT_ME;
 });
@@ -51,7 +60,9 @@ export type ProjectCard = Pick<
 export const getProjects = cache(async (): Promise<ProjectCard[]> => {
   const { data, error } = await supabasePublic()
     .from("projects")
-    .select("id, title, title_accent, slug, short_description, tags, cover_image, card_theme, role, duration, noindex, updated_at")
+    .select(
+      "id, title, title_accent, slug, short_description, tags, cover_image, card_theme, role, duration, noindex, updated_at",
+    )
     .eq("is_published", true)
     .order("sort_order");
   logError("projects", error);
@@ -59,7 +70,9 @@ export const getProjects = cache(async (): Promise<ProjectCard[]> => {
 });
 
 export const getProjectBySlug = cache(
-  async (slug: string): Promise<(ProjectRow & { images: ProjectImageRow[] }) | null> => {
+  async (
+    slug: string,
+  ): Promise<(ProjectRow & { images: ProjectImageRow[] }) | null> => {
     const { data: project, error } = await supabasePublic()
       .from("projects")
       .select("*")
@@ -78,25 +91,69 @@ export const getProjectBySlug = cache(
 );
 
 export const getServices = cache(async (): Promise<ServiceRow[]> => {
-  const { data, error } = await supabasePublic().from("services").select("*").eq("is_published", true).order("sort_order");
+  const { data, error } = await supabasePublic()
+    .from("services")
+    .select("*")
+    .eq("is_published", true)
+    .order("sort_order");
   logError("services", error);
-  return (data ?? []).map((s) => ({ ...s, price_usd: Number(s.price_usd), price_bdt: Number(s.price_bdt) }));
+  return (data ?? []).map((s) => ({
+    ...s,
+    price_usd: Number(s.price_usd),
+    price_bdt: Number(s.price_bdt),
+  }));
 });
 
 export const getProcessSteps = cache(async (): Promise<ProcessStepRow[]> => {
-  const { data, error } = await supabasePublic().from("process_steps").select("*").eq("is_published", true).order("sort_order");
+  const { data, error } = await supabasePublic()
+    .from("process_steps")
+    .select("*")
+    .eq("is_published", true)
+    .order("sort_order");
   logError("process_steps", error);
   return data ?? [];
 });
 
 export const getTestimonials = cache(async (): Promise<TestimonialRow[]> => {
-  const { data, error } = await supabasePublic().from("testimonials").select("*").eq("is_published", true).order("sort_order");
+  const { data, error } = await supabasePublic()
+    .from("testimonials")
+    .select("*")
+    .eq("is_published", true)
+    .order("sort_order");
   logError("testimonials", error);
   return data ?? [];
 });
 
 export const getFaqs = cache(async (): Promise<FaqRow[]> => {
-  const { data, error } = await supabasePublic().from("faqs").select("*").eq("is_published", true).order("sort_order");
+  const { data, error } = await supabasePublic()
+    .from("faqs")
+    .select("*")
+    .eq("is_published", true)
+    .order("sort_order");
   logError("faqs", error);
   return data ?? [];
 });
+
+export const getLandingPageBySlug = cache(
+  async (slug: string): Promise<LandingPageRow | null> => {
+    const { data, error } = await supabasePublic()
+      .from("landing_pages")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .maybeSingle();
+    logError("landing_pages", error);
+    return data ?? null;
+  },
+);
+
+export const getPublishedLandingPageSlugs = cache(
+  async (): Promise<string[]> => {
+    const { data, error } = await supabasePublic()
+      .from("landing_pages")
+      .select("slug")
+      .eq("status", "published");
+    logError("landing_pages slugs", error);
+    return (data ?? []).map((r) => r.slug);
+  },
+);

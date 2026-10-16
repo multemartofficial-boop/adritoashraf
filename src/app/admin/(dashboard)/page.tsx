@@ -9,9 +9,7 @@ import {
   HeartPulse,
   Hourglass,
   Plus,
-  Presentation,
   Upload,
-  Users,
 } from "lucide-react";
 import { requireAdmin } from "@/lib/auth/session";
 import { storage } from "@/lib/storage";
@@ -79,10 +77,6 @@ export default async function OverviewPage() {
     recent,
     upcoming,
     cron,
-    memberCount,
-    webinarCount,
-    grantCount,
-    upcomingWebinars,
   ] = await Promise.all([
     supabase.from("projects").select("id", { count: "exact", head: true }),
     supabase
@@ -129,16 +123,6 @@ export default async function OverviewPage() {
       .select("value")
       .eq("key", "cron_last_run")
       .maybeSingle(),
-    supabase.from("profiles").select("id", { count: "exact", head: true }),
-    supabase.from("webinars").select("id", { count: "exact", head: true }),
-    supabase
-      .from("webinar_access")
-      .select("id", { count: "exact", head: true }),
-    supabase
-      .from("webinars")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "published")
-      .gte("start_at", new Date().toISOString()),
   ]);
 
   const serviceIds = [
@@ -206,30 +190,6 @@ export default async function OverviewPage() {
       unit: "to review",
       icon: Hourglass,
       tone: "danger",
-    },
-    {
-      label: "Members",
-      hint: "Registered accounts in the members area.",
-      value: String(memberCount.count ?? 0),
-      unit: "signed up",
-      icon: Users,
-      tone: "info",
-    },
-    {
-      label: "Webinars",
-      hint: "Total webinars in the members area.",
-      value: String(webinarCount.count ?? 0),
-      unit: `${upcomingWebinars.count ?? 0} upcoming`,
-      icon: Presentation,
-      tone: "success",
-    },
-    {
-      label: "Access Grants",
-      hint: "Emails granted access to webinars.",
-      value: String(grantCount.count ?? 0),
-      unit: "members",
-      icon: Users,
-      tone: "warning",
     },
     {
       label: "Storage Used",

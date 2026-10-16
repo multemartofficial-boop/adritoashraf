@@ -25,7 +25,7 @@ export function ImageField({
     | "site"
     | "media"
     | "about"
-    | "webinars";
+    | "gifts";
   aspect?: string;
   error?: string;
 }) {

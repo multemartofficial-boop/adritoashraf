@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Instrument_Serif, Manrope } from "next/font/google";
 import Script from "next/script";
 import { publicEnv } from "@/lib/env/public";
+import { UtmCapture } from "@/components/site/utm-capture";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full">
         {children}
+        <UtmCapture />
         {/* Hostinger Reach: site-wide tracking + renders any embedded forms. */}
         <Script
           src="https://cdn-reach.hostinger.com/js/embed.js"

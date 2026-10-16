@@ -55,28 +55,11 @@ export async function proxy(request: NextRequest) {
   const host = request.headers.get("host") ?? "";
   const isAdminPath =
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
-  const isMemberPath = pathname.startsWith("/dashboard");
-
   // 1. One canonical domain, always https.
   const canon = canonicalRedirect(request);
   if (canon) return canon;
 
-  // 2. Member area guard: signed-out visitors bounce to /login and return after.
-  if (isMemberPath) {
-    const { response, user } = await updateSession(request);
-    if (!user) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      url.search = `?next=${encodeURIComponent(pathname + search)}`;
-      const redirect = NextResponse.redirect(url);
-      response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
-      return redirect;
-    }
-    response.headers.set("Cache-Control", "private, no-store");
-    return response;
-  }
-
-  // 3. Admin session guard (first line of defence; pages/actions re-check too).
+  // 2. Admin session guard (first line of defence; pages/actions re-check too).
   if (isAdminPath) {
     const { response, user } = await updateSession(request);
     if (pathname.startsWith("/api/admin")) {
@@ -97,7 +80,7 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  // 4. Managed 301 redirects for public paths (never shadows /admin or /api).
+  // 3. Managed 301 redirects for public paths (never shadows /admin or /api).
   if (
     request.method === "GET" &&
     !pathname.startsWith("/api") &&
@@ -111,7 +94,7 @@ export async function proxy(request: NextRequest) {
       );
   }
 
-  // 5. Non-canonical hosts (preview deploys, IPs) must never be indexed.
+  // 4. Non-canonical hosts (preview deploys, IPs) must never be indexed.
   const response = NextResponse.next();
   if (host !== CANONICAL_HOST) response.headers.set("X-Robots-Tag", "noindex");
   return response;

@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NavLink } from "@/types/database";
-import { NavAuth } from "./nav-auth";
 
 const NAV_ICONS: Record<string, LucideIcon> = {
   "#home": Home,
@@ -127,9 +126,8 @@ export default function Header({
 
         <Divider />
 
-        {/* RIGHT — avatar + dominant CTA */}
+        {/* RIGHT — dominant CTA */}
         <div className="flex shrink-0 items-center gap-3">
-          <NavAuth />
           <Link
             href={cta.href}
             className="group inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-[linear-gradient(135deg,#7C4DFF,#F78FD0)] px-5 text-sm font-bold whitespace-nowrap text-white transition-all duration-300 hover:shadow-[0_0_24px_rgb(124_77_255/0.55)]"

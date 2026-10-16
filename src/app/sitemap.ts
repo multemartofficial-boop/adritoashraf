@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
-import { getProjects, getSiteSettings } from "@/lib/data/public";
+import {
+  getProjects,
+  getPublishedLandingPageSlugs,
+  getSiteSettings,
+} from "@/lib/data/public";
 import { publicEnv } from "@/lib/env/public";
 
 // Regenerates with the public pages (revalidatePublic() covers this route too).
@@ -7,9 +11,10 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
-  const [settings, projects] = await Promise.all([
+  const [settings, projects, landingSlugs] = await Promise.all([
     getSiteSettings(),
     getProjects(),
+    getPublishedLandingPageSlugs().catch(() => [] as string[]),
   ]);
 
   return [
@@ -51,5 +56,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "monthly" as const,
         priority: 0.7,
       })),
+    ...landingSlugs.map((slug) => ({
+      url: `${base}/${slug}`,
+      lastModified: settings.updated_at,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
   ];
 }
