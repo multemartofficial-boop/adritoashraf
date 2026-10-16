@@ -23,7 +23,10 @@ export type WebinarBadge = {
   tone: "info" | "success" | "violet" | "neutral";
 };
 
-export function webinarBadge(w: WebinarRow, now = new Date()): WebinarBadge {
+export function webinarBadge(
+  w: Pick<WebinarRow, "start_at" | "end_at" | "recording_url">,
+  now = new Date(),
+): WebinarBadge {
   const phase = webinarPhase(w, now);
   if (phase === "tba") return { label: "To be announced", tone: "neutral" };
   if (phase === "upcoming") return { label: "Upcoming", tone: "info" };

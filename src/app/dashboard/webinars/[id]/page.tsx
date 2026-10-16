@@ -47,12 +47,22 @@ export default async function MemberWebinarPage({
   const { id } = await params;
   const { supabase } = await requireMember();
 
-  // RLS: only published webinars the member has been granted are visible.
-  const { data: webinar } = await supabase
-    .from("webinars")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+  // RLS: only published webinars the member has been granted are visible;
+  // the resources query shares that gate, so both can run in parallel.
+  const [{ data: webinar }, { data: resources }] = await Promise.all([
+    supabase
+      .from("webinars")
+      .select(
+        "id, title, slug, description, thumbnail_url, start_at, end_at, live_url, recording_url, status",
+      )
+      .eq("id", id)
+      .maybeSingle(),
+    supabase
+      .from("webinar_resources")
+      .select("id, webinar_id, title, file_url")
+      .eq("webinar_id", id)
+      .order("sort_order"),
+  ]);
 
   if (!webinar) {
     return (
@@ -79,12 +89,6 @@ export default async function MemberWebinarPage({
       </div>
     );
   }
-
-  const { data: resources } = await supabase
-    .from("webinar_resources")
-    .select("*")
-    .eq("webinar_id", webinar.id)
-    .order("sort_order");
 
   const resolved = await Promise.all(
     (resources ?? []).map(async (r) => ({

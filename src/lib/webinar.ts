@@ -27,7 +27,10 @@ const icsEscape = (s: string) =>
     .replace(/\r?\n/g, "\\n");
 
 /** A downloadable .ics data URI for "Add to calendar". */
-export function webinarIcsHref(w: WebinarRow, siteUrl: string): string | null {
+export function webinarIcsHref(
+  w: Pick<WebinarRow, "id" | "slug" | "title" | "start_at" | "end_at">,
+  siteUrl: string,
+): string | null {
   if (!w.start_at) return null;
   const end =
     w.end_at ??

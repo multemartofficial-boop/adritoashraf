@@ -73,6 +73,8 @@ function LogoutItem() {
 /** Right-side slot of the pill: quiet "Log in" link, or the purple avatar + dropdown when signed in. */
 export function NavAuth() {
   const { user, ready } = useMemberUser();
+  const router = useRouter();
+  const prefetch = () => router.prefetch("/dashboard");
   if (!ready) return <span aria-hidden className="inline-block size-10" />;
 
   if (!user) {
@@ -87,8 +89,10 @@ export function NavAuth() {
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(open) => open && prefetch()}>
       <DropdownMenuTrigger
+        onMouseEnter={prefetch}
+        onFocus={prefetch}
         className="grid size-10 place-items-center rounded-full bg-[#7C4DFF] text-sm font-bold text-white ring-2 ring-[#B794FF]/50 transition-all duration-200 hover:scale-105 hover:ring-[#B794FF]"
         aria-label="Account menu"
       >

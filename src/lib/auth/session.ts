@@ -67,23 +67,30 @@ export type MemberSession = {
 export const getMemberSession = cache(
   async (): Promise<MemberSession | null> => {
     const supabase = await createSupabaseServerClient();
+    // The proxy already validated + refreshed the JWT before this page/action
+    // runs, so reading the local session avoids a second round-trip to Auth.
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) return null;
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name")
-      .eq("id", user.id)
-      .maybeSingle();
+    // Name comes from signup metadata first — skip the profiles query.
+    const metaName =
+      typeof user.user_metadata?.full_name === "string"
+        ? user.user_metadata.full_name.trim()
+        : "";
+    let name = metaName;
+    if (!name) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .maybeSingle();
+      name = profile?.full_name || user.email?.split("@")[0] || "Member";
+    }
 
-    return {
-      userId: user.id,
-      email: user.email ?? "",
-      name: profile?.full_name || user.email?.split("@")[0] || "Member",
-      supabase,
-    };
+    return { userId: user.id, email: user.email ?? "", name, supabase };
   },
 );
 
