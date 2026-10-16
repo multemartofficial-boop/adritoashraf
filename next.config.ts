@@ -7,8 +7,10 @@ const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
   : "";
 const supabaseWs = supabaseOrigin.replace(/^https:/, "wss:");
 
-// Hostinger Reach: embed.js + the form it injects (iframe, API calls, assets).
+// Hostinger Reach: embed.js + the form iframe (hosted on hostingerusercontent.com)
+// + the reach.hostinger.com API it posts to.
 const hostinger = "https://*.hostinger.com";
+const hostingerUc = "https://*.hostingerusercontent.com";
 
 // Baseline CSP. Next.js inline bootstrap scripts need 'unsafe-inline' unless every page
 // is rendered dynamically with nonces, which would defeat static caching on a 1GB host.
@@ -21,12 +23,12 @@ const csp = [
   `img-src 'self' data: blob: ${supabaseOrigin} https://www.googletagmanager.com https://www.google-analytics.com ${hostinger}`.trim(),
   `media-src 'self' blob: ${supabaseOrigin} https://*.youtube.com https://*.vimeo.com`.trim(),
   `font-src 'self' data: ${hostinger}`,
-  `connect-src 'self' ${supabaseOrigin} ${supabaseWs} https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com ${hostinger}`.trim(),
-  `frame-src https://www.youtube-nocookie.com https://player.vimeo.com ${hostinger}`,
+  `connect-src 'self' ${supabaseOrigin} ${supabaseWs} https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com ${hostinger} ${hostingerUc}`.trim(),
+  `frame-src https://www.youtube-nocookie.com https://player.vimeo.com ${hostinger} ${hostingerUc}`,
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  `form-action 'self' ${hostinger} ${hostingerUc}`,
   // In dev the page may be embedded by the IDE browser preview.
   ...(isDev ? [] : ["frame-ancestors 'none'"]),
   ...(isHttps ? ["upgrade-insecure-requests"] : []),
