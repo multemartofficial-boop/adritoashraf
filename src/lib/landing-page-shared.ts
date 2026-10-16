@@ -42,7 +42,7 @@ export const LP_TEMPLATE: LandingPageInput = {
   cover_tag: "100% Free",
   cta_label: "Send me the free checklist",
   privacy_line: "No spam. Unsubscribe anytime.",
-  form_embed: "",
+  form_embed: '<div data-reach-form="edffe081-f6fd-43c7-be0a-d688a5b6962b"></div>',
   gift_type: "pdf",
   gift_file: "",
   gift_url: "",
