@@ -8,6 +8,7 @@ import {
   getTestimonials,
 } from "@/lib/data/public";
 import { JsonLd } from "@/components/site/json-ld";
+import { WebinarBadge } from "@/components/site/webinar-badge";
 import { About } from "@/components/sections/about";
 import { AboutMe } from "@/components/sections/about-me";
 import { BookingCta } from "@/components/sections/booking-cta";
@@ -67,6 +68,7 @@ export default async function HomePage() {
       <Testimonials items={testimonials} text={t.testimonials} />
       <BookingCta text={t.booking} ownerName={settings.owner_name} />
       <Faq faqs={faqs} text={t.faq} contactEmail={settings.contact_email} />
+      <WebinarBadge />
     </>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif, Manrope } from "next/font/google";
+import Script from "next/script";
 import { publicEnv } from "@/lib/env/public";
 import "./globals.css";
 
@@ -41,7 +42,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${manrope.variable} ${instrumentSerif.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        {/* Hostinger Reach: site-wide tracking + renders any embedded forms. */}
+        <Script
+          src="https://cdn-reach.hostinger.com/js/embed.js"
+          strategy="afterInteractive"
+        />
+      </body>
     </html>
   );
 }

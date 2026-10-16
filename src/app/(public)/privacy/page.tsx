@@ -42,6 +42,11 @@ export default async function PrivacyPage() {
             <strong>Messages</strong> — anything you send by email or WhatsApp
             using the contact details on this site.
           </li>
+          <li>
+            <strong>Embedded forms</strong> — webinar or event registrations go
+            through a form provided by Hostinger Reach, which processes your
+            name and email under Hostinger&rsquo;s own privacy policy.
+          </li>
           {s.ga4_id && (
             <li>
               <strong>Usage analytics</strong> — this site uses Google Analytics
@@ -51,8 +56,8 @@ export default async function PrivacyPage() {
           )}
         </ul>
         <p>
-          There is no account registration, no comments and no newsletter —
-          nothing else is gathered.
+          There is no account registration and no comments — nothing else is
+          gathered.
         </p>
       </section>
 
@@ -81,7 +86,8 @@ export default async function PrivacyPage() {
         <p>
           Booking records are stored in a Supabase-hosted database with
           row-level access controls. Emails are delivered through a standard
-          SMTP mail service. Video meetings use Google Meet, so Google&rsquo;s own
+          SMTP mail service. Embedded registration forms are processed by
+          Hostinger Reach. Video meetings use Google Meet, so Google&rsquo;s own
           policies apply to the call itself.{" "}
           {s.ga4_id &&
             "Analytics data is processed by Google under its own privacy policy."}

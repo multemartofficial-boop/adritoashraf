@@ -7,19 +7,22 @@ const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
   : "";
 const supabaseWs = supabaseOrigin.replace(/^https:/, "wss:");
 
+// Hostinger Reach: embed.js + the form it injects (iframe, API calls, assets).
+const hostinger = "https://*.hostinger.com";
+
 // Baseline CSP. Next.js inline bootstrap scripts need 'unsafe-inline' unless every page
 // is rendered dynamically with nonces, which would defeat static caching on a 1GB host.
 const csp = [
   "default-src 'self'",
   // Google Analytics domains are allowed so GA4 works the moment an ID is saved
   // in Site Settings; nothing loads while the field is empty.
-  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${supabaseOrigin} https://www.googletagmanager.com https://www.google-analytics.com`.trim(),
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn-reach.hostinger.com${isDev ? " 'unsafe-eval'" : ""}`,
+  `style-src 'self' 'unsafe-inline' ${hostinger}`,
+  `img-src 'self' data: blob: ${supabaseOrigin} https://www.googletagmanager.com https://www.google-analytics.com ${hostinger}`.trim(),
   `media-src 'self' blob: ${supabaseOrigin} https://*.youtube.com https://*.vimeo.com`.trim(),
-  "font-src 'self' data:",
-  `connect-src 'self' ${supabaseOrigin} ${supabaseWs} https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`.trim(),
-  "frame-src https://www.youtube-nocookie.com https://player.vimeo.com",
+  `font-src 'self' data: ${hostinger}`,
+  `connect-src 'self' ${supabaseOrigin} ${supabaseWs} https://www.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com ${hostinger}`.trim(),
+  `frame-src https://www.youtube-nocookie.com https://player.vimeo.com ${hostinger}`,
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
