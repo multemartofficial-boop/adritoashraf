@@ -12,7 +12,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsRow = {
   tagline: "Building websites, web apps and business software with a modern AI-assisted workflow — faster delivery, clean code, real results.",
   hero_intro: "Adrito Ashraf",
   hero_line_1: "FULL STACK",
-  hero_line_2: "DEVELOPMENT",
+  hero_line_2: "DEVELOPER",
   header_cta_label: "Let's Collaborate",
   header_cta_href: "/book",
   nav_links: [

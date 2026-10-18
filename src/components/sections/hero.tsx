@@ -30,11 +30,11 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
 
       <div className="section-x relative flex flex-1 flex-col justify-center pt-32 pb-10 md:pt-36">
-        <div className="max-w-[min(100%,58rem)]">
+        <div className="max-w-[min(100%,68rem)]">
           <p className="animate-reveal font-serif text-[clamp(1.75rem,3.4vw,3.25rem)] leading-none italic">{s.hero_intro}</p>
           <h1 className="mt-3 font-extrabold tracking-tight uppercase">
             <span
-              className="animate-reveal text-gradient-lavender block text-[clamp(1.8rem,9vw,9.5rem)] leading-[0.92]"
+              className="animate-reveal text-gradient-lavender block text-[clamp(1.8rem,8vw,8rem)] leading-[0.92]"
               style={{ animationDelay: "120ms" }}
             >
               {s.hero_line_1}
@@ -43,11 +43,11 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
               <a
                 href="#about"
                 aria-label="Scroll to the About section"
-                className="bg-orange-pill group/pill inline-grid h-[clamp(2rem,5.5vw,6.5rem)] w-[clamp(3.4rem,11vw,13rem)] shrink-0 place-items-center rounded-full shadow-[0_10px_40px_rgb(242_107_58/0.35)] transition-all duration-300 ease-out hover:scale-[1.06] hover:shadow-[0_14px_50px_rgb(244_166_200/0.5)] focus-visible:outline-2 focus-visible:outline-white active:scale-95"
+                className="bg-orange-pill group/pill inline-grid h-[clamp(2rem,4.8vw,5.5rem)] w-[clamp(3.4rem,9.5vw,11rem)] shrink-0 place-items-center rounded-full shadow-[0_10px_40px_rgb(242_107_58/0.35)] transition-all duration-300 ease-out hover:scale-[1.06] hover:shadow-[0_14px_50px_rgb(244_166_200/0.5)] focus-visible:outline-2 focus-visible:outline-white active:scale-95"
               >
                 <ArrowRight className="size-[45%] stroke-[2.5] transition-transform duration-300 ease-out group-hover/pill:translate-x-1" />
               </a>
-              <span className="text-gradient-peach min-w-0 text-[clamp(1.8rem,9vw,9.5rem)] leading-[0.92]">{s.hero_line_2}</span>
+              <span className="text-gradient-peach min-w-0 text-[clamp(1.8rem,8vw,8rem)] leading-[0.92] whitespace-nowrap">{s.hero_line_2}</span>
             </span>
           </h1>
           {s.tagline && (
