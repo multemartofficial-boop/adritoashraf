@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { leadSchema } from "@/lib/validators/contact";
 import { zodFieldErrors, type FieldErrors } from "@/lib/forms";
+import { track } from "@/lib/track";
 
 /** Name + email signup for a gift landing page; posts to /api/lp/subscribe. */
 export function LeadForm({ slug, buttonLabel }: { slug: string; buttonLabel: string }) {
@@ -43,6 +44,7 @@ export function LeadForm({ slug, buttonLabel }: { slug: string; buttonLabel: str
       });
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; redirect?: string; error?: string; fieldErrors?: FieldErrors };
       if (res.ok && body.ok) {
+        track("checklist_form_submit", { slug });
         router.push(body.redirect ?? `/${slug}/thank-you`);
         return;
       }

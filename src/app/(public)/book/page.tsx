@@ -4,6 +4,7 @@ import { CalendarClock, ShieldCheck, Timer, Video } from "lucide-react";
 import { getServices, getSiteSettings } from "@/lib/data/public";
 import { SectionTag } from "@/components/site/section-heading";
 import { BookingFlow } from "@/components/booking/booking-flow";
+import { site } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Book a meeting",
@@ -26,6 +27,11 @@ export default async function BookPage() {
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
         <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
           <SectionTag>{text?.tag || "Book a Call"}</SectionTag>
+          {site.availability.slotsText && (
+            <p className="inline-flex items-center gap-2 rounded-full border border-orange/40 bg-orange/10 px-4 py-1.5 text-sm font-medium text-orange">
+              {site.availability.slotsText}
+            </p>
+          )}
           <h1 className="text-[clamp(2rem,4vw,3.25rem)] leading-[1.1] font-bold tracking-tight">
             Let&apos;s talk about <span className="font-serif font-normal text-violet italic">your project</span>
           </h1>

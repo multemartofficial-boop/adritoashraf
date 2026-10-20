@@ -4,11 +4,19 @@ import { Award, CircleCheck, Download, Mail, MapPin, UserRound, Briefcase, Arrow
 import type { AboutMeRow } from "@/types/database";
 import { SectionTag, TriHeading } from "@/components/site/section-heading";
 import { SOCIAL_LABEL, SocialIcon } from "@/components/site/social-icon";
+import { site } from "@/config/site";
 
 const INFO_ICONS = [UserRound, Briefcase, MapPin, Award, Mail, CircleCheck] as const;
 
+const WORK_STYLE = [
+  "Clear communication — plain language, no jargon, regular updates",
+  "Fixed price agreed before work starts — no surprise bills",
+  "Full source code and support after launch",
+];
+
 export function AboutMe({ data }: { data: AboutMeRow }) {
   if (!data.is_visible) return null;
+  const photo = site.aboutPhoto || data.image_url;
 
   const info = [
     { label: "Name", value: data.full_name },
@@ -31,9 +39,9 @@ export function AboutMe({ data }: { data: AboutMeRow }) {
             className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(60%_60%_at_50%_40%,rgb(123_79_255/0.35),transparent_75%)] blur-2xl"
           />
           <div className="card-lift relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-[linear-gradient(150deg,#141633_0%,#3a2050_55%,#7b4fff_140%)] shadow-[0_30px_80px_rgb(20_22_51/0.35)]">
-            {data.image_url ? (
+            {photo ? (
               <Image
-                src={data.image_url}
+                src={photo}
                 alt={data.full_name ? `Portrait of ${data.full_name}` : "Profile photo"}
                 fill
                 priority
@@ -73,6 +81,15 @@ export function AboutMe({ data }: { data: AboutMeRow }) {
 
           {data.bio_1 && <p className="max-w-xl leading-relaxed text-neutral-600">{data.bio_1}</p>}
           {data.bio_2 && <p className="max-w-xl leading-relaxed text-neutral-600">{data.bio_2}</p>}
+
+          <ul className="max-w-xl space-y-2.5">
+            {WORK_STYLE.map((w) => (
+              <li key={w} className="flex items-start gap-2.5 text-sm text-neutral-700">
+                <CircleCheck className="mt-0.5 size-4 shrink-0 text-violet" aria-hidden />
+                {w}
+              </li>
+            ))}
+          </ul>
 
           {info.length > 0 && (
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">

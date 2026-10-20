@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { Accordion as A } from "radix-ui";
-import { ArrowUpRight, Plus } from "lucide-react";
+import { ArrowUpRight, MessageCircle, Plus } from "lucide-react";
 import type { FaqRow, SectionText } from "@/types/database";
 import { SectionTag, TriHeading } from "@/components/site/section-heading";
+import { site } from "@/config/site";
 
 export function Faq({ faqs, text, contactEmail }: { faqs: FaqRow[]; text?: SectionText; contactEmail: string }) {
   if (faqs.length === 0) return null;
+  // Cost + timeline questions open by default (the two buyers ask first).
+  const defaultOpen = faqs.filter((f) => /cost|long/i.test(f.question)).map((f) => f.id);
+  const email = contactEmail || site.email;
+  const wa = site.whatsappNumber ? `https://wa.me/${site.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(site.whatsappMessage)}` : "";
 
   return (
     <section
@@ -31,17 +36,27 @@ export function Faq({ faqs, text, contactEmail }: { faqs: FaqRow[]; text?: Secti
           </div>
           <div className="flex flex-col gap-3">
             <Link href="/book" className="bg-cta inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold">
-              Book a Free Call <ArrowUpRight className="size-4" />
+              Book a Free 15-Min Call <ArrowUpRight className="size-4" />
             </Link>
-            {contactEmail && (
-              <a href={`mailto:${contactEmail}`} className="text-center text-sm text-white/70 underline-offset-4 hover:text-white hover:underline">
-                {contactEmail}
+            {wa && (
+              <a
+                href={wa}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-300 transition-colors hover:bg-emerald-400/20"
+              >
+                <MessageCircle className="size-4" /> Chat on WhatsApp
+              </a>
+            )}
+            {email && (
+              <a href={`mailto:${email}`} className="text-center text-sm text-white/70 underline-offset-4 hover:text-white hover:underline">
+                {email}
               </a>
             )}
           </div>
         </aside>
 
-        <A.Root type="single" collapsible defaultValue={faqs[0]?.id} className="space-y-3">
+        <A.Root type="multiple" defaultValue={defaultOpen.length ? defaultOpen : [faqs[0]?.id ?? ""]} className="space-y-3">
           {faqs.map((f) => (
             <A.Item
               key={f.id}

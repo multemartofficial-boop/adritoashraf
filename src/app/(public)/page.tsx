@@ -9,6 +9,9 @@ import {
 } from "@/lib/data/public";
 import { JsonLd } from "@/components/site/json-ld";
 import { WebinarBadge } from "@/components/site/webinar-badge";
+import { BookCtaStrip } from "@/components/site/book-cta-strip";
+import { StickyBookCta } from "@/components/site/sticky-book-cta";
+import { projectCardVisible, site } from "@/config/site";
 import { About } from "@/components/sections/about";
 import { AboutMe } from "@/components/sections/about-me";
 import { BookingCta } from "@/components/sections/booking-cta";
@@ -36,6 +39,7 @@ export default async function HomePage() {
     ]);
   const t = settings.section_texts;
   const featured = testimonials.find((x) => x.type === "text" && x.content);
+  const visibleProjects = projects.filter((p) => projectCardVisible(p.slug));
 
   return (
     <>
@@ -56,21 +60,26 @@ export default async function HomePage() {
       <AboutMe data={aboutMe} />
       <About settings={settings} featured={featured} />
       <Portfolio
-        projects={projects.slice(0, 4)}
-        total={projects.length}
+        projects={visibleProjects.slice(0, 4)}
+        total={visibleProjects.length}
         text={t.portfolio}
       />
+      <BookCtaStrip tone="dark" />
       <Services
         services={services}
         text={t.services}
         defaultCurrency={settings.default_currency}
       />
+      <BookCtaStrip />
       <Process steps={steps} text={t.process} />
       <Testimonials items={testimonials} text={t.testimonials} />
+      <BookCtaStrip />
       <BookingCta text={t.booking} ownerName={settings.owner_name} />
       <GiftCta />
       <Faq faqs={faqs} text={t.faq} contactEmail={settings.contact_email} />
-      <WebinarBadge />
+      <BookCtaStrip />
+      {site.webinar.enabled && <WebinarBadge />}
+      <StickyBookCta />
     </>
   );
 }

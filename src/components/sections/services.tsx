@@ -138,6 +138,13 @@ export function Services({
           ))}
         </ul>
       </div>
+
+      <p className="text-center text-sm text-neutral-600">
+        Not sure what you need?{" "}
+        <Link href="/book" className="font-semibold text-violet underline-offset-4 hover:underline">
+          Book a free 15-min call
+        </Link>
+      </p>
     </section>
   );
 }

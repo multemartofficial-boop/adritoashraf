@@ -84,6 +84,27 @@ export function TestimonialForm({ action, testimonial }: { action: Action; testi
         </Field>
       </FormSection>
 
+      <FormSection title="Proof (optional)" description="Shown on the public site only when filled in.">
+        <Field
+          label="Result line"
+          htmlFor="result"
+          error={errors.result}
+          hint="One-line outcome, shown in accent above the quote. e.g. Cut payroll reporting from days to minutes."
+          className="md:col-span-2"
+        >
+          <Input {...errProps("result", errors.result)} defaultValue={testimonial?.result} />
+        </Field>
+        <Field label="Company logo" htmlFor="company_logo_url" error={errors.company_logo_url} hint="Shown next to the client name.">
+          <ImageField name="company_logo_url" folder="testimonials" aspect="aspect-video max-w-56" defaultValue={testimonial?.company_logo_url} error={errors.company_logo_url} />
+        </Field>
+        <Field label="Screenshot" htmlFor="screenshot_url" error={errors.screenshot_url} hint="Proof screenshot shown under the quote.">
+          <ImageField name="screenshot_url" folder="testimonials" aspect="aspect-video max-w-56" defaultValue={testimonial?.screenshot_url} error={errors.screenshot_url} />
+        </Field>
+        <Field label="Link URL" htmlFor="link_url" error={errors.link_url} hint="Optional link wrapped around the screenshot." className="md:col-span-2">
+          <Input {...errProps("link_url", errors.link_url)} type="url" defaultValue={testimonial?.link_url} placeholder="https://…" />
+        </Field>
+      </FormSection>
+
       <div className={type === "video" ? "contents" : "hidden"}>
         <FormSection title="Video" description="Paste a YouTube, Vimeo or direct .mp4 link (https).">
           <Field label="Video URL" htmlFor="video_url" error={errors.video_url} className="md:col-span-2">

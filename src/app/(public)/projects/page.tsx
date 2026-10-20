@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/site/json-ld";
 import { CARD_THEMES } from "@/components/site/card-themes";
 import { FitImage } from "@/components/ui/fit-image";
 import { cn } from "@/lib/utils";
+import { projectCardVisible, site } from "@/config/site";
 
 export const revalidate = 3600;
 
@@ -27,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProjectsPage() {
   const [projects, settings] = await Promise.all([
-    getProjects(),
+    getProjects().then((all) => all.filter((p) => projectCardVisible(p.slug))),
     getSiteSettings(),
   ]);
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
@@ -103,6 +104,11 @@ export default async function ProjectsPage() {
                     )}
                   >
                     <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem] bg-black/10">
+                      {site.projects[p.slug]?.isDemoData && (
+                        <span className="absolute top-3 left-3 z-10 rounded-full bg-black/60 px-3 py-1 text-[10px] font-semibold tracking-wide text-white/90 uppercase backdrop-blur-sm">
+                          Demo data
+                        </span>
+                      )}
                       {p.cover_image ? (
                         <FitImage
                           src={p.cover_image}

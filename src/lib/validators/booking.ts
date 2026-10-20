@@ -25,7 +25,8 @@ const optionalEnum = <T extends readonly string[]>(values: T) => z.union([z.lite
 
 export const bookingIntakeSchema = z.object({
   client_name: z.string().trim().min(1, "Your name is required.").max(80, "Keep it under 80 characters."),
-  email: z.email("Enter a valid email address.").max(120),
+  // The intake form offers one "WhatsApp or email" contact field; either is enough.
+  email: z.union([z.literal(""), z.email("Enter a valid email address.").max(120)]).default(""),
   phone: z.string().trim().max(30, "Keep it under 30 characters.").default(""),
   service_id: z.union([z.literal(""), z.uuid()]).default(""),
   project_type: z.enum(PROJECT_TYPES.map((t) => t.value) as [string, ...string[]], {
@@ -33,17 +34,17 @@ export const bookingIntakeSchema = z.object({
   }),
   budget_range: optionalEnum(BUDGET_RANGES).default(""),
   timeline_needed: optionalEnum(TIMELINES).default(""),
-  project_description: z
-    .string()
-    .trim()
-    .min(20, "Tell me a little more (at least 20 characters).")
-    .max(3000, "Keep it under 3000 characters."),
+  project_description: z.string().trim().max(3000, "Keep it under 3000 characters.").default(""),
   reference_links: z
     .array(z.url({ protocol: /^https?$/, error: "Links must start with https://" }))
     .max(5, "Up to 5 links.")
     .default([]),
   start_time_utc: z.string().refine((v) => Number.isFinite(Date.parse(v)), "Pick a time slot."),
   client_timezone: z.string().refine(isValidTimeZone, "Invalid timezone."),
+}).superRefine((v, ctx) => {
+  if (!v.email && !v.phone) {
+    ctx.addIssue({ code: "custom", path: ["email"], message: "Add your WhatsApp number or email." });
+  }
 });
 
 export type BookingIntakeInput = z.infer<typeof bookingIntakeSchema>;

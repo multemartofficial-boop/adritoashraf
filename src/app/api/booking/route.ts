@@ -53,8 +53,10 @@ export async function POST(request: Request) {
   }
   const input = parsed.data;
 
-  if (!(await rateLimit(`book:email:${input.email.toLowerCase()}`, 5, 86_400))) {
-    return json({ error: "Too many bookings from this email. Please try again tomorrow." }, 429);
+  // Clients may leave a phone/WhatsApp contact instead of an email — rate-limit on whichever exists.
+  const contactKey = input.email ? `book:email:${input.email.toLowerCase()}` : `book:phone:${input.phone}`;
+  if (!(await rateLimit(contactKey, 5, 86_400))) {
+    return json({ error: "Too many bookings from this contact. Please try again tomorrow." }, 429);
   }
 
   // Re-validate the slot server-side; the picker may be stale.
@@ -117,7 +119,9 @@ export async function POST(request: Request) {
 
   // Emails run after the response so slow SMTP never delays confirmation.
   after(async () => {
-    await sendBookingEmail(isConfirmed ? "booking_confirmed_client" : "booking_received_client", row, { manageToken });
+    if (row.email) {
+      await sendBookingEmail(isConfirmed ? "booking_confirmed_client" : "booking_received_client", row, { manageToken });
+    }
     await sendBookingEmail("booking_admin_notification", row);
   });
 

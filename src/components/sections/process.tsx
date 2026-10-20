@@ -1,5 +1,7 @@
+import { HandCoins, LifeBuoy } from "lucide-react";
 import type { ProcessStepRow, SectionText } from "@/types/database";
 import { SectionHeading } from "@/components/site/section-heading";
+import { site } from "@/config/site";
 
 export function Process({ steps, text }: { steps: ProcessStepRow[]; text?: SectionText }) {
   if (steps.length === 0) return null;
@@ -31,6 +33,21 @@ export function Process({ steps, text }: { steps: ProcessStepRow[]; text?: Secti
           </li>
         ))}
       </ol>
+
+      {(site.paymentTermsText || site.freeSupportDays > 0) && (
+        <ul className="flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/70">
+          {site.paymentTermsText && (
+            <li className="flex items-center gap-2.5">
+              <HandCoins className="size-4 text-orange" aria-hidden /> {site.paymentTermsText}
+            </li>
+          )}
+          {site.freeSupportDays > 0 && (
+            <li className="flex items-center gap-2.5">
+              <LifeBuoy className="size-4 text-orange" aria-hidden /> {site.freeSupportDays} days of free support after launch
+            </li>
+          )}
+        </ul>
+      )}
     </section>
   );
 }

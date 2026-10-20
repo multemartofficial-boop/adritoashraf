@@ -19,10 +19,10 @@ export async function GiftCta() {
             <Gift className="size-4" />
           </span>
           <span className="truncate">
-            <span className="font-semibold">
-              {page.pill_text || "Free gift"}:
-            </span>{" "}
-            <span className="text-neutral-600">{page.internal_name}</span>
+            <span className="font-semibold">Not ready to talk?</span>{" "}
+            <span className="text-neutral-600">
+              Get the free {page.internal_name || "checklist"}
+            </span>
           </span>
         </span>
         <span className="bg-cta inline-flex shrink-0 items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-white transition-transform duration-300 group-hover:scale-[1.04]">

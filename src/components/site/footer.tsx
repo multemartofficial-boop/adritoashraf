@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { SiteSettingsRow } from "@/types/database";
 import { getPublishedLandingPages, type ProjectCard } from "@/lib/data/public";
+import { site } from "@/config/site";
 import { SOCIAL_LABEL, SocialIcon } from "./social-icon";
 
 const resolve = (href: string) => (href.startsWith("#") ? `/${href}` : href);
@@ -71,9 +72,9 @@ export async function Footer({
             <li>
               <Link
                 href="/book"
-                className="text-neutral-700 hover:text-ink hover:underline"
+                className="font-semibold text-orange hover:text-ink hover:underline"
               >
-                Book a meeting
+                Book a Free 15-Min Call
               </Link>
             </li>
             {giftPages.map((p) => (
@@ -134,36 +135,62 @@ export async function Footer({
         )}
 
         <div className="space-y-6 text-sm">
-          {s.contact_email && (
+          {/* Contact — config values win; empty/TODO entries stay hidden. */}
+          {(site.email || s.contact_email) && (
             <div>
               <h2 className="mb-2 font-semibold text-orange">Email</h2>
               <a
-                href={`mailto:${s.contact_email}`}
+                href={`mailto:${site.email || s.contact_email}`}
                 className="break-all text-neutral-700 hover:text-ink hover:underline"
               >
-                {s.contact_email}
+                {site.email || s.contact_email}
               </a>
             </div>
           )}
-          {(s.phone || s.whatsapp) && (
+          {(site.phone || s.phone || site.whatsappNumber || s.whatsapp) && (
             <div>
               <h2 className="mb-2 font-semibold text-orange">Phone</h2>
-              {s.phone && (
+              {(site.phone || s.phone) && (
                 <a
-                  href={`tel:${s.phone.replace(/\s/g, "")}`}
+                  href={`tel:${(site.phone || s.phone).replace(/\s/g, "")}`}
                   className="block text-neutral-700 hover:text-ink"
                 >
-                  {s.phone}
+                  {site.phone || s.phone}
                 </a>
               )}
-              {s.whatsapp && (
+              {(site.whatsappNumber || s.whatsapp) && (
                 <a
-                  href={`https://wa.me/${s.whatsapp.replace(/\D/g, "")}`}
+                  href={`https://wa.me/${(site.whatsappNumber || s.whatsapp).replace(/\D/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-neutral-700 hover:text-ink"
                 >
-                  WhatsApp: {s.whatsapp}
+                  WhatsApp: {site.whatsappNumber || s.whatsapp}
+                </a>
+              )}
+            </div>
+          )}
+          {(site.social.linkedin || site.social.facebook) && (
+            <div>
+              <h2 className="mb-2 font-semibold text-orange">Connect</h2>
+              {site.social.linkedin && (
+                <a
+                  href={site.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-neutral-700 hover:text-ink"
+                >
+                  LinkedIn
+                </a>
+              )}
+              {site.social.facebook && (
+                <a
+                  href={site.social.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-neutral-700 hover:text-ink"
+                >
+                  Facebook
                 </a>
               )}
             </div>

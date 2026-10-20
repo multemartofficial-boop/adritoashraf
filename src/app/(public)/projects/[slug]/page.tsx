@@ -20,6 +20,7 @@ import { JsonLd } from "@/components/site/json-ld";
 import { CARD_THEMES } from "@/components/site/card-themes";
 import { FitImage } from "@/components/ui/fit-image";
 import { cn } from "@/lib/utils";
+import { site } from "@/config/site";
 import { Gallery } from "./gallery";
 
 export const revalidate = 3600;
@@ -219,6 +220,23 @@ export default async function ProjectPage({
             </div>
           )}
 
+          {(site.caseStudyResults[project.slug]?.length ?? 0) > 0 && (
+            <section>
+              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+                The{" "}
+                <span className="font-serif font-normal italic">results</span>
+              </h2>
+              <ul className="mt-6 grid gap-4 sm:grid-cols-3">
+                {site.caseStudyResults[project.slug].map((r) => (
+                  <li key={r.label} className="rounded-2xl bg-[linear-gradient(150deg,#efe8ff,#fff1ea)] p-5">
+                    <p className="text-3xl font-bold tracking-tight text-orange">{r.value}</p>
+                    <p className="mt-1 text-sm text-neutral-700">{r.label}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {project.features.length > 0 && (
             <section>
               <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
@@ -292,6 +310,20 @@ export default async function ProjectPage({
             </Link>
           </div>
         </aside>
+      </div>
+
+      <div className="section-x pb-16">
+        <div className="bg-holo flex flex-col items-center gap-5 rounded-[2rem] p-8 text-center md:p-12">
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+            Need something <span className="font-serif font-normal italic">similar?</span>
+          </h2>
+          <Link
+            href="/book"
+            className="bg-cta inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white shadow-[0_10px_30px_rgb(123_79_255/0.35)] transition-transform duration-200 hover:scale-[1.03]"
+          >
+            Book a free call about a similar project <ArrowUpRight className="size-4" />
+          </Link>
+        </div>
       </div>
 
       {next && next.id !== project.id && (

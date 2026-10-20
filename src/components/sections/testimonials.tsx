@@ -32,12 +32,27 @@ function TextCard({ t }: { t: TestimonialRow }) {
       <Quote className="absolute top-5 right-5 size-9 text-white/90 drop-shadow" aria-hidden />
       <figcaption className="flex items-center gap-3">
         <Avatar t={t} />
-        <span>
+        <span className="min-w-0">
           <span className="block text-sm font-semibold">{t.client_name}</span>
           {t.client_role && <span className="block text-xs text-neutral-600">{t.client_role}</span>}
         </span>
+        {t.company_logo_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={t.company_logo_url} alt="" className="ml-auto h-8 w-auto max-w-20 object-contain" />
+        )}
       </figcaption>
-      <blockquote className="mt-5 flex-1 text-sm leading-relaxed text-neutral-700">“{t.content}”</blockquote>
+      {t.result && <p className="mt-4 text-sm font-bold text-orange">{t.result}</p>}
+      <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-neutral-700">“{t.content}”</blockquote>
+      {t.screenshot_url && (
+        <a
+          href={t.link_url || t.screenshot_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative mt-4 block aspect-video overflow-hidden rounded-xl border border-white/60"
+        >
+          <Image src={t.screenshot_url} alt={`Proof for ${t.client_name}'s review`} fill sizes="33vw" className="object-cover" />
+        </a>
+      )}
       <div className="mt-5">
         <Stars rating={t.rating} />
       </div>

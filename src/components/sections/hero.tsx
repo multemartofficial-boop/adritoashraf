@@ -1,9 +1,8 @@
 import { getImageProps } from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import type { SiteSettingsRow } from "@/types/database";
 import { HERO_IMAGE } from "@/lib/site-config";
-
-const MARQUEE_COLORS = ["bg-violet", "bg-orange", "bg-emerald-500", "bg-sky-500", "bg-pink-500", "bg-amber-400"];
+import { site } from "@/config/site";
 
 function HeroBackground() {
   const common = { alt: "", sizes: "100vw", priority: true } as const;
@@ -20,8 +19,6 @@ function HeroBackground() {
 }
 
 export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
-  const items = s.marquee_items.length ? s.marquee_items : [s.role];
-
   return (
     <section id="home" aria-label="Introduction" className="relative isolate flex min-h-svh flex-col overflow-hidden bg-ink text-white">
       <HeroBackground />
@@ -55,22 +52,42 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
               {s.tagline}
             </p>
           )}
+          <div className="animate-reveal mt-8 flex flex-wrap items-center gap-4" style={{ animationDelay: "440ms" }}>
+            <a
+              href="#book"
+              className="bg-cta inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white shadow-[0_10px_30px_rgb(123_79_255/0.4)] transition-transform duration-300 hover:scale-[1.03]"
+            >
+              Book a Free 15-Min Call
+              <ArrowRight className="size-4" aria-hidden />
+            </a>
+            <a
+              href="#portfolio"
+              className="text-sm font-semibold text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
+            >
+              See my work
+            </a>
+          </div>
+          <p className="animate-reveal mt-4 max-w-md text-xs leading-relaxed text-white/50" style={{ animationDelay: "520ms" }}>
+            No obligation. You get a clear plan, timeline and estimated price after the call.
+          </p>
         </div>
       </div>
 
       <div className="relative pb-8 md:pb-10">
-        <div className="mask-fade-x overflow-hidden" aria-label="Technologies I work with">
-          <ul className="animate-marquee flex w-max gap-12 pr-12 motion-reduce:animate-none md:gap-16 md:pr-16">
-            {[...items, ...items].map((item, i) => (
-              <li
-                key={`${item}-${i}`}
-                aria-hidden={i >= items.length || undefined}
-                className="flex shrink-0 items-center gap-3 text-base font-semibold text-white/85 md:text-lg"
-              >
-                <span className={`grid size-7 place-items-center rounded-lg text-xs font-bold text-white ${MARQUEE_COLORS[i % MARQUEE_COLORS.length]}`}>
-                  {item.charAt(0)}
+        <div className="section-x" aria-label="Why clients trust me">
+          <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/10 pt-6 text-sm text-white/75 md:text-base">
+            {["4+ production systems delivered", "100% source code handover", "Fixed price, no surprises"].map((item) => (
+              <li key={item} className="flex items-center gap-2.5">
+                <span className="bg-orange-pill grid size-5 shrink-0 place-items-center rounded-full text-white">
+                  <Check className="size-3" strokeWidth={3} aria-hidden />
                 </span>
                 {item}
+              </li>
+            ))}
+            {site.clientLogos.map((l) => (
+              <li key={l.src} className="flex items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={l.src} alt={l.alt} className="h-7 w-auto opacity-80" />
               </li>
             ))}
           </ul>

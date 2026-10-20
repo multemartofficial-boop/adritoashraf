@@ -92,7 +92,7 @@ create table if not exists public.site_settings (
   hero_intro        text not null default 'I Am Adrito Ashraf',
   hero_line_1       text not null default 'FULL STACK',
   hero_line_2       text not null default 'DEVELOPER',
-  header_cta_label  text not null default 'Let''s Collaborate',
+  header_cta_label  text not null default 'Book a Free 15-Min Call',
   header_cta_href   text not null default '/book',
   nav_links         jsonb not null default '[]'::jsonb,
   marquee_items     jsonb not null default '[]'::jsonb,
@@ -214,6 +214,10 @@ create table if not exists public.testimonials (
   rating        smallint not null default 5 check (rating between 1 and 5),
   video_url     text not null default '',
   poster_url    text not null default '',
+  result        text not null default '',
+  company_logo_url text not null default '',
+  link_url      text not null default '',
+  screenshot_url text not null default '',
   sort_order    integer not null default 0,
   is_published  boolean not null default false,
   created_at    timestamptz not null default now(),
@@ -221,6 +225,10 @@ create table if not exists public.testimonials (
   constraint testimonials_video_needs_url check (type <> 'video' or video_url <> '')
 );
 create index if not exists testimonials_published_sort_idx on public.testimonials (is_published, sort_order);
+alter table public.testimonials add column if not exists result text not null default '';
+alter table public.testimonials add column if not exists company_logo_url text not null default '';
+alter table public.testimonials add column if not exists link_url text not null default '';
+alter table public.testimonials add column if not exists screenshot_url text not null default '';
 
 -- -----------------------------------------------------------------------------
 -- faqs
@@ -384,7 +392,7 @@ create table if not exists public.about_me (
   experience_badge     text not null default '',
   skills               jsonb not null default '[]'::jsonb,
   social_links         jsonb not null default '[]'::jsonb,
-  primary_cta_label    text not null default 'Let''s Talk',
+  primary_cta_label    text not null default 'Book a Free 15-Min Call',
   primary_cta_href     text not null default '/book',
   cv_url               text not null default '',
   image_url            text not null default '',
@@ -813,11 +821,11 @@ insert into public.site_settings (
   'Adrito',
   'Adrito Ashraf',
   'Full Stack Developer',
-  'Building websites, web apps and business software with a modern AI-assisted workflow — faster delivery, clean code, real results.',
-  'I Am Adrito Ashraf',
-  'FULL STACK',
-  'DEVELOPER',
-  'Let''s Collaborate',
+  'Delivered in weeks. Websites, ERP and HR systems built around how your business actually works — fixed price, full source code, free 15-minute call to start.',
+  'Full Stack Developer',
+  'WEBSITES &',
+  'SOFTWARE',
+  'Book a Free 15-Min Call',
   '/book',
   '[{"label":"Home","href":"#home"},{"label":"About","href":"#about"},{"label":"Portfolio","href":"#portfolio"},{"label":"Services","href":"#services"},{"label":"Testimonials","href":"#testimonials"}]'::jsonb,
   '["Next.js","React","TypeScript","Node.js","PostgreSQL","Supabase","Tailwind CSS","Three.js"]'::jsonb,
@@ -952,9 +960,19 @@ from (values
   ('How long does a project take?', 'A website usually takes 2 to 4 weeks. SaaS and ERP systems take longer. You get a timeline in the proposal.', 3),
   ('Do I get the source code?', 'Yes. You receive the full source code, deployment access and documentation at handover.', 4),
   ('What happens in the meeting?', 'I first understand your project, then explain a solution and timeline, and finally discuss pricing.', 5),
-  ('Do you use AI tools while building?', 'Yes. I use AI coding agents to speed up development, but I own the planning, architecture, testing and delivery. You get faster turnaround, a tested product, and full source code — and I''m accountable for the result.', 6)
+  ('Do you use AI tools while building?', 'Yes. I use AI coding agents to speed up development, but I own the planning, architecture, testing and delivery. You get faster turnaround, a tested product, and full source code — and I''m accountable for the result.', 6),
+  ('What if I need changes after launch?', 'Every project includes a support window after launch for fixes. Bigger changes or new features are quoted separately — always with a fixed price agreed before work starts.', 7),
+  ('Can we talk in Bangla?', 'Yes. Calls, messages and documentation can be in Bangla or English — whichever is easier for you.', 8)
 ) as v(question, answer, sort_order)
 where not exists (select 1 from public.faqs);
+
+insert into public.faqs (question, answer, sort_order, is_published)
+select v.question, v.answer, v.sort_order, true
+from (values
+  ('What if I need changes after launch?', 'Every project includes a support window after launch for fixes. Bigger changes or new features are quoted separately — always with a fixed price agreed before work starts.', 90),
+  ('Can we talk in Bangla?', 'Yes. Calls, messages and documentation can be in Bangla or English — whichever is easier for you.', 91)
+) as v(question, answer, sort_order)
+where not exists (select 1 from public.faqs f where f.question = v.question);
 
 insert into public.dashboard_state (key, value)
 values ('quick_setup', '{"dismissed": false}'::jsonb)

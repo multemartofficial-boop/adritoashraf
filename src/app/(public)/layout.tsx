@@ -4,6 +4,9 @@ import { publicEnv } from "@/lib/env/public";
 import { Footer } from "@/components/site/footer";
 import Header from "@/components/site/header";
 import { JsonLd } from "@/components/site/json-ld";
+import { WhatsAppFloat } from "@/components/site/whatsapp-float";
+import { TrackEvents } from "@/components/site/track-events";
+import { projectCardVisible, site } from "@/config/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSiteSettings();
@@ -25,9 +28,10 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: s.owner_name,
-      images: s.og_image
-        ? [{ url: s.og_image, width: 1200, height: 630 }]
-        : undefined,
+      images:
+        s.og_image || site.ogImage
+          ? [{ url: s.og_image || site.ogImage, width: 1200, height: 630 }]
+          : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -48,7 +52,7 @@ export default async function PublicLayout({
 }) {
   const [settings, projects] = await Promise.all([
     getSiteSettings(),
-    getProjects(),
+    getProjects().then((all) => all.filter((p) => projectCardVisible(p.slug))),
   ]);
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
   const socials = settings.social_links.filter((l) => l.url).map((l) => l.url);
@@ -67,6 +71,20 @@ export default async function PublicLayout({
           address: settings.address
             ? { "@type": "PostalAddress", addressLocality: settings.address }
             : undefined,
+          sameAs: socials.length ? socials : undefined,
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          name: settings.site_name,
+          url: base,
+          description: settings.seo_description || settings.tagline || undefined,
+          founder: { "@type": "Person", name: settings.owner_name },
+          areaServed: "Bangladesh",
+          address: { "@type": "PostalAddress", addressLocality: site.location },
+          email: settings.contact_email || site.email || undefined,
           sameAs: socials.length ? socials : undefined,
         }}
       />
@@ -111,6 +129,8 @@ export default async function PublicLayout({
       />
       <main id="main">{children}</main>
       <Footer settings={settings} projects={projects} />
+      <WhatsAppFloat />
+      <TrackEvents />
     </>
   );
 }

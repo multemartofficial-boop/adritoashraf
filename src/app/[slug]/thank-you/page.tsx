@@ -101,6 +101,7 @@ export default async function ThankYouPage({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex h-12 items-center gap-2 rounded-full bg-[linear-gradient(135deg,#7C4DFF,#F78FD0)] px-7 text-sm font-bold text-white transition-all duration-300 hover:shadow-[0_0_24px_rgb(124_77_255/0.55)]"
+                  data-track="checklist_download"
                 >
                   <GiftIcon className="size-4" />
                   {GIFT_LABELS[page.gift_type]}

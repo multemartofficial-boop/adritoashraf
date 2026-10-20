@@ -13,7 +13,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsRow = {
   hero_intro: "Adrito Ashraf",
   hero_line_1: "FULL STACK",
   hero_line_2: "DEVELOPER",
-  header_cta_label: "Let's Collaborate",
+  header_cta_label: "Book a Free 15-Min Call",
   header_cta_href: "/book",
   nav_links: [
     { label: "Home", href: "#home" },
@@ -64,7 +64,7 @@ export const DEFAULT_ABOUT_ME: AboutMeRow = {
   experience_badge: "4+ Years Experience",
   skills: [],
   social_links: [],
-  primary_cta_label: "Let's Talk",
+  primary_cta_label: "Book a Free 15-Min Call",
   primary_cta_href: "/book",
   cv_url: "",
   image_url: "/uploads/profile.webp",

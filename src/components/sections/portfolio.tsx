@@ -5,6 +5,7 @@ import type { ProjectCard } from "@/lib/data/public";
 import { CARD_THEMES } from "@/components/site/card-themes";
 import { FitImage } from "@/components/ui/fit-image";
 import { cn } from "@/lib/utils";
+import { site } from "@/config/site";
 
 export function Portfolio({
   projects,
@@ -152,6 +153,11 @@ export function Portfolio({
                 </div>
 
                 <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-[1.5rem] bg-black/10 md:mt-0 md:aspect-auto md:min-h-80">
+                  {site.projects[p.slug]?.isDemoData && (
+                    <span className="absolute top-3 left-3 z-10 rounded-full bg-black/60 px-3 py-1 text-[10px] font-semibold tracking-wide text-white/90 uppercase backdrop-blur-sm">
+                      Demo data
+                    </span>
+                  )}
                   {p.cover_image ? (
                     <FitImage
                       src={p.cover_image}

@@ -3,16 +3,28 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, CalendarPlus, Check, Download, Loader2, Paperclip, Plus, Video, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarPlus, Check, Download, Loader2, Video } from "lucide-react";
 import type { ServiceRow } from "@/types/database";
-import { BUDGET_RANGES, PROJECT_TYPES, TIMELINES, bookingIntakeSchema } from "@/lib/validators/booking";
+import { BUDGET_RANGES, bookingIntakeSchema } from "@/lib/validators/booking";
 import { zodFieldErrors, type FieldErrors } from "@/lib/forms";
 import { browserTimeZone, fmtLongDate, fmtTime, googleCalendarUrl } from "@/lib/booking/format";
+import { site } from "@/config/site";
+import { track } from "@/lib/track";
 import { SlotPicker } from "./slot-picker";
 import { cn } from "@/lib/utils";
 
 type Step = 1 | 2 | 3;
 type Services = Pick<ServiceRow, "id" | "title" | "slug">[];
+
+// "What do you need" options → project_type values (kept aligned with the DB enum).
+const NEED_OPTIONS = [
+  { value: "website", label: "Website" },
+  { value: "erp", label: "ERP / business software" },
+  { value: "hr", label: "HR system" },
+  { value: "other", label: "Something else" },
+] as const;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Confirmation = {
   reference_code: string;
@@ -64,8 +76,6 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
   const [step, setStep] = useState<Step>(1);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState("");
-  const [links, setLinks] = useState<string[]>([]);
-  const [file, setFile] = useState<File | null>(null);
   const [timezone, setTimezone] = useState(browserTimeZone);
   const [slot, setSlot] = useState<string | null>(null);
   const [adminTz, setAdminTz] = useState("Asia/Dhaka");
@@ -87,12 +97,15 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
 
   const collect = () => {
     const fd = new FormData(formRef.current ?? undefined);
-    fd.set("reference_links", JSON.stringify(links.filter(Boolean)));
+    // The single "WhatsApp or email" field maps onto the backend's email/phone pair.
+    const contact = String(fd.get("contact") ?? "").trim();
+    fd.set("email", EMAIL_RE.test(contact) ? contact : "");
+    fd.set("phone", EMAIL_RE.test(contact) ? "" : contact);
+    fd.set("reference_links", "[]");
+    fd.delete("attachment");
     fd.set("client_timezone", timezone);
     fd.set("start_time_utc", slot ?? "");
     fd.set("form_started_at", String(startedAt.current));
-    if (file) fd.set("attachment", file);
-    else fd.delete("attachment");
     return fd;
   };
 
@@ -108,7 +121,7 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
       budget_range: fd.get("budget_range"),
       timeline_needed: fd.get("timeline_needed"),
       project_description: fd.get("project_description"),
-      reference_links: links.filter(Boolean),
+      reference_links: [],
       start_time_utc: new Date().toISOString(),
       client_timezone: timezone,
     });
@@ -133,9 +146,9 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
       const fd = collect();
       setSummary({
         name: String(fd.get("client_name") ?? ""),
-        email: String(fd.get("email") ?? ""),
-        service: services.find((s) => s.id === fd.get("service_id"))?.title ?? "General enquiry",
-        type: PROJECT_TYPES.find((t) => t.value === fd.get("project_type"))?.label ?? "",
+        email: String(fd.get("email") ?? "") || String(fd.get("phone") ?? ""),
+        service: NEED_OPTIONS.find((t) => t.value === fd.get("project_type"))?.label ?? "",
+        type: services.find((s) => s.id === fd.get("service_id"))?.title ?? "",
       });
     }
     setStep((s) => (s + 1) as Step);
@@ -153,6 +166,7 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
         fieldErrors?: FieldErrors;
       };
       if (res.ok && body.reference_code) {
+        track("booking_form_submit", { reference: body.reference_code });
         setDone(body as Confirmation);
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
@@ -212,32 +226,20 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
 
         <section className={cn("space-y-5", step !== 1 && "hidden")} aria-hidden={step !== 1}>
           <h2 className="text-xl font-semibold text-ink">Tell me about your project</h2>
+          <input type="hidden" name="service_id" value={preselected} />
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Your name" name="client_name" error={errors.client_name}>
               <input id="client_name" name="client_name" className="field-public" autoComplete="name" aria-invalid={!!errors.client_name} />
             </Field>
-            <Field label="Email" name="email" error={errors.email} hint="Confirmation and meeting link go here.">
-              <input id="email" name="email" type="email" className="field-public" autoComplete="email" aria-invalid={!!errors.email} />
+            <Field label="WhatsApp or email" name="contact" error={errors.email ?? errors.phone} hint="I'll reply here — WhatsApp is fastest.">
+              <input id="contact" name="contact" className="field-public" autoComplete="tel" aria-invalid={!!(errors.email ?? errors.phone)} />
             </Field>
-            <Field label="Phone / WhatsApp" name="phone" error={errors.phone} optional>
-              <input id="phone" name="phone" className="field-public" autoComplete="tel" aria-invalid={!!errors.phone} />
-            </Field>
-            <Field label="Service" name="service_id" error={errors.service_id}>
-              <select id="service_id" name="service_id" className="field-public" defaultValue={preselected}>
-                <option value="">Not sure yet / general enquiry</option>
-                {services.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.title}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Project type" name="project_type" error={errors.project_type}>
+            <Field label="What do you need?" name="project_type" error={errors.project_type}>
               <select id="project_type" name="project_type" className="field-public" defaultValue="" aria-invalid={!!errors.project_type}>
                 <option value="" disabled>
                   Choose one
                 </option>
-                {PROJECT_TYPES.map((t) => (
+                {NEED_OPTIONS.map((t) => (
                   <option key={t.value} value={t.value}>
                     {t.label}
                   </option>
@@ -254,107 +256,23 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
                 ))}
               </select>
             </Field>
-            <Field label="When do you need it?" name="timeline_needed" error={errors.timeline_needed} optional>
-              <select id="timeline_needed" name="timeline_needed" className="field-public" defaultValue="">
-                <option value="">Not decided</option>
-                {TIMELINES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </Field>
           </div>
 
           <Field
-            label="Project description"
+            label="Short message"
             name="project_description"
             error={errors.project_description}
-            hint="What are you building, who is it for, and what should it do? The more detail, the better I can prepare."
+            hint="One or two lines is enough — we'll talk about the details on the call."
+            optional
           >
             <textarea
               id="project_description"
               name="project_description"
-              rows={6}
+              rows={4}
               className="field-public resize-y"
               aria-invalid={!!errors.project_description}
             />
           </Field>
-
-          <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium text-ink">
-              Reference links <span className="font-normal text-neutral-400">(optional, up to 5)</span>
-            </span>
-            {links.map((l, i) => (
-              <div key={i} className="flex gap-2">
-                <input
-                  type="url"
-                  value={l}
-                  onChange={(e) => setLinks(links.map((x, j) => (j === i ? e.target.value : x)))}
-                  placeholder="https://example.com"
-                  className="field-public"
-                  aria-label={`Reference link ${i + 1}`}
-                  aria-invalid={!!errors[`reference_links.${i}`]}
-                />
-                <button
-                  type="button"
-                  onClick={() => setLinks(links.filter((_, j) => j !== i))}
-                  className="grid size-11 shrink-0 place-items-center rounded-xl border border-neutral-200 text-neutral-500 hover:text-red-600"
-                  aria-label="Remove link"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-            ))}
-            {errors.reference_links && <p className="text-xs text-red-600">{errors.reference_links}</p>}
-            {links.length < 5 && (
-              <button type="button" onClick={() => setLinks([...links, ""])} className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-violet hover:underline">
-                <Plus className="size-4" /> Add a link
-              </button>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium text-ink">
-              Attachment <span className="font-normal text-neutral-400">(optional: brief, sketch or PDF, up to 5 MB)</span>
-            </span>
-            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-neutral-300 px-4 py-3 text-sm text-neutral-600 hover:border-violet">
-              <Paperclip className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{file ? `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)` : "Choose a file"}</span>
-              <input
-                type="file"
-                name="attachment"
-                accept="image/jpeg,image/png,image/webp,application/pdf"
-                className="sr-only"
-                onChange={(e) => {
-                  const f = e.target.files?.[0] ?? null;
-                  if (f && f.size > 5 * 1024 * 1024) {
-                    setErrors({ ...errors, attachment: "File is larger than 5 MB." });
-                    setFile(null);
-                  } else {
-                    const { attachment: _drop, ...rest } = errors;
-                    void _drop;
-                    setErrors(rest);
-                    setFile(f);
-                  }
-                }}
-              />
-              {file && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setFile(null);
-                  }}
-                  className="ml-auto text-neutral-400 hover:text-red-600"
-                  aria-label="Remove attachment"
-                >
-                  <X className="size-4" />
-                </button>
-              )}
-            </label>
-            {errors.attachment && <p className="text-xs text-red-600">{errors.attachment}</p>}
-          </div>
         </section>
 
         <section className={cn("space-y-5", step !== 2 && "hidden")} aria-hidden={step !== 2}>
@@ -385,9 +303,9 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
           )}
           <dl className="grid gap-3 text-sm sm:grid-cols-2">
             <Summary label="Name" value={summary.name} />
-            <Summary label="Email" value={summary.email} />
-            <Summary label="Service" value={summary.service} />
-            <Summary label="Project type" value={summary.type} />
+            <Summary label="Contact" value={summary.email} />
+            <Summary label="You need" value={summary.service} />
+            {summary.type && <Summary label="Service" value={summary.type} />}
           </dl>
           <p className="text-sm text-neutral-600">
             You will get an email with the details and a private link to reschedule or cancel. The Google Meet link is shared once the meeting is confirmed.
@@ -446,11 +364,11 @@ function Confirmed({ data, timezone, ownerName }: { data: Confirmation; timezone
       <span className="bg-cta mx-auto grid size-16 place-items-center rounded-full text-white">
         <Check className="size-7" />
       </span>
-      <h2 className="mt-6 text-2xl font-bold text-ink md:text-3xl">{confirmed ? "Your meeting is confirmed" : "Request received"}</h2>
+      <h2 className="mt-6 text-2xl font-bold text-ink md:text-3xl">ধন্যবাদ!</h2>
       <p className="mt-3 text-neutral-600">
         {confirmed
-          ? "Everything is set. The details and Google Meet link are on their way to your inbox."
-          : `Thanks! ${ownerName} will confirm your slot shortly. Check your inbox for the details.`}
+          ? `Your meeting is confirmed — ${site.responseTimeHours} ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করব। The details and Google Meet link are on their way to your inbox.`
+          : `${site.responseTimeHours} ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করব। ${ownerName} will confirm your slot shortly — check your inbox for the details.`}
       </p>
       <div className="bg-holo mt-8 rounded-2xl p-5 text-left">
         <p className="text-xs tracking-wide text-neutral-600 uppercase">Reference</p>

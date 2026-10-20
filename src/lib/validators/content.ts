@@ -163,6 +163,10 @@ export const testimonialSchema = z
     rating: z.coerce.number().int().min(1).max(5),
     video_url: optionalUrl,
     poster_url: imageUrl,
+    result: text(140),
+    company_logo_url: imageUrl,
+    link_url: optionalUrl,
+    screenshot_url: imageUrl,
     is_published: z.boolean(),
   })
   .superRefine((v, ctx) => {
@@ -185,6 +189,10 @@ export const parseTestimonialForm = (fd: FormData) =>
     rating: fdString(fd, "rating") || "5",
     video_url: fdString(fd, "video_url").trim(),
     poster_url: fdString(fd, "poster_url"),
+    result: fdString(fd, "result"),
+    company_logo_url: fdString(fd, "company_logo_url"),
+    link_url: fdString(fd, "link_url").trim(),
+    screenshot_url: fdString(fd, "screenshot_url"),
     is_published: fdBool(fd, "is_published"),
   });
 

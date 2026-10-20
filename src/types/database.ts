@@ -164,6 +164,10 @@ export type TestimonialRow = {
   rating: number;
   video_url: string;
   poster_url: string;
+  result: string;
+  company_logo_url: string;
+  link_url: string;
+  screenshot_url: string;
   sort_order: number;
   is_published: boolean;
   created_at: string;
