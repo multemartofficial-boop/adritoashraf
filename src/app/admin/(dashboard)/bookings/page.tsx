@@ -41,7 +41,9 @@ export default async function BookingsPage({ searchParams }: PageProps<"/admin/b
 
   if (status) query = query.eq("status", status);
   if (serviceId) query = query.eq("service_id", serviceId);
-  if (range === "upcoming") query = query.gte("end_time_utc", now.toISOString());
+  // "Upcoming" also keeps unresolved past meetings visible — a pending booking
+  // that already passed still needs the admin's attention.
+  if (range === "upcoming") query = query.or(`end_time_utc.gte.${now.toISOString()},status.eq.pending`);
   if (range === "today") query = query.gte("start_time_utc", dayStart(0)).lt("start_time_utc", dayStart(1));
   if (range === "week") query = query.gte("start_time_utc", dayStart(0)).lt("start_time_utc", dayStart(7));
   if (range === "past") query = query.lt("end_time_utc", now.toISOString());
