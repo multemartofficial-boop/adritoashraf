@@ -823,7 +823,7 @@ insert into public.site_settings (
   '["Next.js","React","TypeScript","Node.js","PostgreSQL","Supabase","Tailwind CSS","Three.js"]'::jsonb,
   '{"accent":"Build The Idea,","strong":"Ship The Product. I Design And Develop Websites, SaaS And Business Software That Deliver","muted":"Real Results For Real Businesses."}'::jsonb,
   'From a single landing page to a complete ERP, I handle design, development and deployment end to end.',
-  '[{"value":"4+","label":"Production systems delivered for real businesses."},{"value":"100%","label":"Projects delivered with full source code and handover."},{"value":"3X","label":"Faster internal workflows after replacing spreadsheets."}]'::jsonb,
+  '[{"value":"4+","label":"Production systems delivered for real businesses."},{"value":"100%","label":"Projects delivered with full source code and handover."},{"value":"3X","label":"Faster internal workflows after replacing manual work."}]'::jsonb,
   '',
   'Dhaka, Bangladesh',
   '[{"platform":"github","url":""},{"platform":"linkedin","url":""},{"platform":"facebook","url":""},{"platform":"x","url":""}]'::jsonb,
@@ -875,7 +875,7 @@ insert into public.projects (
 (
   'HR Management', 'Software', 'hr-management-software',
   'Complete HR system covering employees, attendance, leave, payroll and reports.',
-  'Employee records, attendance and payroll lived in scattered spreadsheets, making monthly payroll slow and error-prone.',
+  'Employee records, attendance and payroll lived in scattered files and notebooks, making monthly payroll slow and error-prone.',
   'A central HR platform with role-based access, attendance tracking, leave approvals and automated payroll calculation.',
   '["Employee profiles and documents","Attendance and shift tracking","Leave requests and approvals","Payroll with payslips","Role-based access control"]'::jsonb,
   '["React","Node.js","TypeScript","PostgreSQL"]'::jsonb,

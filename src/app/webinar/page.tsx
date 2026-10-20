@@ -18,7 +18,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Free Webinar — Custom Software for Small Business",
   description:
-    "A free live session on when your business outgrows spreadsheets, what custom software really costs, and how the build process works — with live Q&A.",
+    "A free live session on when your business outgrows manual work, what custom software really costs, and how the build process works — with live Q&A.",
   alternates: { canonical: "/webinar" },
 };
 
@@ -29,7 +29,7 @@ const HOSTINGER_FORM_ID = "2f72dab9-3154-4b14-8755-ad0e0ec5ee69";
 // ------------------------------------------------------------------------------
 
 const LEARNINGS = [
-  "The real signs your business has outgrown spreadsheets and WhatsApp threads",
+  "The real signs your business has outgrown manual processes and WhatsApp threads",
   "What custom software costs, how long it takes, and what the process looks like",
   "Live Q&A — bring your project idea and get honest, no-pitch answers",
 ];
@@ -87,7 +87,7 @@ export default async function WebinarPage() {
             </span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
-            When spreadsheets stop working: a free session on what a custom
+            When manual work stops scaling: a free session on what a custom
             website, SaaS or ERP would actually do for your business — no
             jargon, no sales pitch.
           </p>

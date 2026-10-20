@@ -101,7 +101,7 @@ export function LpForm({ page }: { page?: LandingPageRow }) {
 
       <FormSection title="Basics" description="Internal name, public URL slug and visibility.">
         <Field label="Internal name" htmlFor="internal_name" error={errors.internal_name}>
-          <Input defaultValue={d.internal_name} placeholder="7-Step Checklist — Excel to Software" {...errProps("internal_name", errors.internal_name)} />
+          <Input defaultValue={d.internal_name} placeholder="7-Step Checklist — Manual Work to Software" {...errProps("internal_name", errors.internal_name)} />
         </Field>
         <Field label="Public URL" htmlFor="slug" error={errors.slug} hint="Visitors open yoursite.com/slug — lowercase letters, numbers, dashes.">
           <div className="flex items-center gap-2">
@@ -125,13 +125,13 @@ export function LpForm({ page }: { page?: LandingPageRow }) {
           <Input id="cover_tag" name="cover_tag" defaultValue={d.cover_tag} placeholder="100% Free" />
         </Field>
         <Field label="Headline — accent part" htmlFor="heading_accent" error={errors["heading.accent"]}>
-          <Input id="heading_accent" name="heading_accent" defaultValue={d.heading?.accent} placeholder="Stop running your business on spreadsheets." />
+          <Input id="heading_accent" name="heading_accent" defaultValue={d.heading?.accent} placeholder="Stop running your business on phone calls and guesswork." />
         </Field>
         <Field label="Headline — strong part" htmlFor="heading_strong" error={errors["heading.strong"]}>
           <Input id="heading_strong" name="heading_strong" defaultValue={d.heading?.strong} placeholder="7-Step Checklist:" />
         </Field>
         <Field label="Headline — muted part" htmlFor="heading_muted" error={errors["heading.muted"]} className="md:col-span-2">
-          <Input id="heading_muted" name="heading_muted" defaultValue={d.heading?.muted} placeholder="move from Excel to real software, the right way." />
+          <Input id="heading_muted" name="heading_muted" defaultValue={d.heading?.muted} placeholder="move from manual work to real software, the right way." />
         </Field>
         <Field label="Subheadline" htmlFor="subheadline" error={errors.subheadline} className="md:col-span-2">
           <Textarea id="subheadline" name="subheadline" rows={3} defaultValue={d.subheadline} />
@@ -140,7 +140,7 @@ export function LpForm({ page }: { page?: LandingPageRow }) {
           <ListField name="bullets" defaultValue={d.bullets} max={6} error={errors.bullets} placeholder="What readers get" />
         </Field>
         <Field label="Who this is for" htmlFor="audience_line" error={errors.audience_line} className="md:col-span-2">
-          <Input id="audience_line" name="audience_line" defaultValue={d.audience_line} placeholder="For business owners buried in spreadsheets…" />
+          <Input id="audience_line" name="audience_line" defaultValue={d.audience_line} placeholder="For business owners losing hours to version conflicts and day-long reports…" />
         </Field>
       </FormSection>
 
