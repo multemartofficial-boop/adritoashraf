@@ -331,7 +331,7 @@ export type LandingPageEventRow = {
   created_at: string;
 };
 
-export type ContactSource = "form" | "manual";
+export type ContactSource = "form" | "manual" | "booking";
 
 export type ContactRow = {
   id: string;

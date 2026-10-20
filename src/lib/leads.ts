@@ -54,6 +54,40 @@ export async function saveLead(
   return { page, contact, isNew: true };
 }
 
+/**
+ * Records a booking client in contacts (source = 'booking'). A client who only
+ * left a WhatsApp number still lands in the list (email = ''). Existing rows
+ * keep their source; only name/phone gaps are filled.
+ */
+export async function saveBookingContact(input: { name: string; email: string; phone: string }) {
+  const supabase = supabaseAdmin();
+  const email = input.email.trim().toLowerCase();
+  const phone = input.phone.trim();
+
+  let existing: ContactRow | null = null;
+  if (email) {
+    ({ data: existing } = await supabase.from("contacts").select("*").eq("email", email).maybeSingle());
+  }
+  if (!existing && phone) {
+    ({ data: existing } = await supabase.from("contacts").select("*").eq("phone", phone).maybeSingle());
+  }
+  if (existing) {
+    await supabase
+      .from("contacts")
+      .update({ name: existing.name || input.name, phone: existing.phone || phone })
+      .eq("id", existing.id);
+    return;
+  }
+  const { error } = await supabase.from("contacts").insert({
+    name: input.name,
+    email,
+    phone,
+    source: "booking",
+    notes: "Booked a meeting",
+  });
+  if (error) console.error("[contacts] booking contact insert failed", error);
+}
+
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 

@@ -17,9 +17,12 @@ const schema = z.object({
   SMTP_USER: z.string().default(""),
   SMTP_PASS: z.string().default(""),
   EMAIL_FROM: z.string().default(""),
+  // Resend HTTP API key — used automatically when set (or when EMAIL_TRANSPORT=resend).
+  RESEND_API_KEY: z.string().default(""),
   ADMIN_NOTIFY_EMAIL: z.union([z.literal(""), z.email()]).default(""),
   // "log" prints emails to the server console instead of sending (dev/testing).
-  EMAIL_TRANSPORT: z.enum(["smtp", "log"]).default("smtp"),
+  // "auto" picks Resend when RESEND_API_KEY is set, otherwise SMTP.
+  EMAIL_TRANSPORT: z.enum(["auto", "resend", "smtp", "log"]).default("auto"),
 });
 
 export type ServerEnv = z.infer<typeof schema>;

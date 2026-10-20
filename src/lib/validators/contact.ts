@@ -17,13 +17,19 @@ export const leadSchema = z.object({
 });
 export type LeadInput = z.infer<typeof leadSchema>;
 
-/** Admin: add/edit a contact by hand. */
-export const contactSchema = z.object({
-  name,
-  email,
-  phone: z.string().trim().max(40, "Phone is too long."),
-  notes: z.string().trim().max(2000, "Keep notes under 2000 characters."),
-});
+/** Admin: add/edit a contact by hand. Email or phone — at least one is required. */
+export const contactSchema = z
+  .object({
+    name,
+    email: z.union([z.literal(""), email]).default(""),
+    phone: z.string().trim().max(40, "Phone is too long."),
+    notes: z.string().trim().max(2000, "Keep notes under 2000 characters."),
+  })
+  .superRefine((v, ctx) => {
+    if (!v.email && !v.phone) {
+      ctx.addIssue({ code: "custom", path: ["email"], message: "Add an email or a phone number." });
+    }
+  });
 export type ContactInput = z.infer<typeof contactSchema>;
 
 export const parseContact = (fd: FormData) =>

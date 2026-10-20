@@ -8,6 +8,7 @@ import { generateManageToken, generateReferenceCode, hashManageToken } from "@/l
 import { storage, uploadBookingAttachment } from "@/lib/storage";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendBookingEmail } from "@/lib/email/booking-emails";
+import { saveBookingContact } from "@/lib/leads";
 import type { BookingRow } from "@/types/database";
 
 const MIN_FILL_MS = 3_000;
@@ -119,6 +120,12 @@ export async function POST(request: Request) {
 
   // Emails run after the response so slow SMTP never delays confirmation.
   after(async () => {
+    // Keep the contacts list complete: every booking client lands as a 'booking' contact.
+    try {
+      await saveBookingContact({ name: input.client_name, email: input.email, phone: input.phone });
+    } catch (e) {
+      console.error("[booking contact]", e);
+    }
     if (row.email) {
       await sendBookingEmail(isConfirmed ? "booking_confirmed_client" : "booking_received_client", row, { manageToken });
     }

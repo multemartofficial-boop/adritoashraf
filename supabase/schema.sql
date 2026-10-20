@@ -1214,15 +1214,16 @@ create trigger landing_pages_updated_at before update on public.landing_pages
 
 -- =============================================================================
 -- CONTACTS (leads)
---   * source = 'form'   -> submitted through a gift-page signup form (/api/lp/subscribe, service role)
---   * source = 'manual' -> added by the admin from /admin/contacts
+--   * source = 'form'    -> submitted through a gift-page signup form (/api/lp/subscribe, service role)
+--   * source = 'manual'  -> added by the admin from /admin/contacts
+--   * source = 'booking' -> booked a meeting; email may be '' when they left WhatsApp instead
 -- =============================================================================
 create table if not exists public.contacts (
   id           uuid primary key default gen_random_uuid(),
   name         text not null default '',
-  email        text not null unique check (email = lower(email)),
+  email        text not null check (email = lower(email)),
   phone        text not null default '',
-  source       text not null default 'manual' check (source in ('form','manual')),
+  source       text not null default 'manual' check (source in ('form','manual','booking')),
   page_id      uuid references public.landing_pages (id) on delete set null,
   page_slug    text not null default '',                    -- kept even if the page is deleted
   utm_source   text not null default '',
@@ -1233,6 +1234,11 @@ create table if not exists public.contacts (
   updated_at   timestamptz not null default now()
 );
 
+-- Email unique only when present: phone-only booking contacts share email ''.
+alter table public.contacts drop constraint if exists contacts_email_key;
+alter table public.contacts drop constraint if exists contacts_source_check;
+alter table public.contacts add constraint contacts_source_check check (source in ('form','manual','booking'));
+create unique index if not exists contacts_email_unique on public.contacts (email) where email <> '';
 create index if not exists contacts_source_idx on public.contacts (source, created_at desc);
 create index if not exists contacts_page_idx on public.contacts (page_id);
 
@@ -1243,6 +1249,17 @@ create policy "contacts admin all" on public.contacts
   for all to authenticated
   using (public.is_admin())
   with check (public.is_admin());
+
+-- Backfill: existing bookings become 'booking' contacts (email match, else phone match).
+insert into public.contacts (name, email, phone, source, notes)
+select b.client_name, b.email, b.phone, 'booking', 'Booked a meeting ' || b.reference_code
+from public.bookings b
+where not exists (
+    select 1 from public.contacts c where b.email <> '' and c.email = b.email
+  )
+  and not exists (
+    select 1 from public.contacts c where b.email = '' and b.phone <> '' and c.phone = b.phone
+  );
 
 drop trigger if exists contacts_updated_at on public.contacts;
 create trigger contacts_updated_at before update on public.contacts

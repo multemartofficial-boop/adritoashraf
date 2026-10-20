@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Download, Inbox, Loader2, Plus, Search, Trash2, UserPen, Users } from "lucide-react";
+import { CalendarCheck, Download, Inbox, Loader2, Plus, Search, Trash2, UserPen, Users } from "lucide-react";
 import type { ContactRow, ContactSource } from "@/types/database";
 import { parseContact } from "@/lib/validators/contact";
 import { EmptyState } from "@/components/admin/empty-state";
@@ -23,9 +23,10 @@ import { createContactAction, deleteContactAction, updateContactAction } from ".
 export type ContactListItem = ContactRow & { page_name: string };
 type Filters = { source: string; q: string };
 
-const SOURCE_META: Record<ContactSource, { label: string; tone: "success" | "warning"; icon: typeof Inbox }> = {
+const SOURCE_META: Record<ContactSource, { label: string; tone: "success" | "warning" | "info"; icon: typeof Inbox }> = {
   form: { label: "Form", tone: "success", icon: Inbox },
   manual: { label: "Manual", tone: "warning", icon: UserPen },
+  booking: { label: "Booking", tone: "info", icon: CalendarCheck },
 };
 
 const fmtDate = (iso: string) =>
@@ -90,6 +91,7 @@ export function ContactsManager({ items, filters }: { items: ContactListItem[]; 
             <option value="">All sources</option>
             <option value="form">Form</option>
             <option value="manual">Manual</option>
+            <option value="booking">Booking</option>
           </Select>
           <Button variant="outline" onClick={exportCsv} disabled={items.length === 0}>
             <Download /> CSV
@@ -212,9 +214,11 @@ function ContactDetail({ contact: c, onClose }: { contact: ContactListItem; onCl
       <div className="border-b border-admin-border p-5 pr-14">
         <div className="flex items-center gap-2">
           <SourceBadge source={c.source} />
-          <span className="text-xs text-admin-muted">{c.source === "form" ? "Submitted a signup form" : "Added manually"}</span>
+          <span className="text-xs text-admin-muted">
+            {c.source === "form" ? "Submitted a signup form" : c.source === "booking" ? "Booked a meeting" : "Added manually"}
+          </span>
         </div>
-        <h2 className="mt-2 text-lg font-semibold">{c.name || c.email}</h2>
+        <h2 className="mt-2 text-lg font-semibold">{c.name || c.email || c.phone}</h2>
         <p className="text-sm text-admin-muted">Added {fmtDate(c.created_at)}</p>
       </div>
 
@@ -225,9 +229,13 @@ function ContactDetail({ contact: c, onClose }: { contact: ContactListItem; onCl
           <>
             <dl className="grid grid-cols-2 gap-3 text-sm">
               <Item label="Email">
-                <a href={`mailto:${c.email}`} className="text-admin-info hover:underline">
-                  {c.email}
-                </a>
+                {c.email ? (
+                  <a href={`mailto:${c.email}`} className="text-admin-info hover:underline">
+                    {c.email}
+                  </a>
+                ) : (
+                  "—"
+                )}
               </Item>
               <Item label="Phone / WhatsApp">{c.phone || "—"}</Item>
               {c.source === "form" && (
