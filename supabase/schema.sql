@@ -108,7 +108,7 @@ create table if not exists public.site_settings (
   seo_title         text not null default '',
   seo_description   text not null default '',
   og_image          text not null default '',
-  default_currency  text not null default 'USD' check (default_currency in ('USD', 'BDT')),
+  default_currency  text not null default 'BDT' check (default_currency in ('USD', 'BDT')),
   theme             jsonb not null default '{}'::jsonb,
   updated_at        timestamptz not null default now()
 );
@@ -838,7 +838,7 @@ insert into public.site_settings (
   'Freelance full stack developer building websites, SaaS and business software.',
   'Adrito Ashraf — Full Stack Developer',
   'Freelance full stack developer from Bangladesh building websites, SaaS, ERP and HR systems. Book a meeting to discuss your project.',
-  'USD'
+  'BDT'
 )
 on conflict (id) do nothing;
 

@@ -40,7 +40,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsRow = {
   search_console_verification: "",
   about_quote: "",
   about_quote_author: "",
-  default_currency: "USD",
+  default_currency: "BDT",
   section_texts: {},
   theme: {},
   updated_at: new Date(0).toISOString(),

@@ -19,9 +19,7 @@ type Services = Pick<ServiceRow, "id" | "title" | "slug">[];
 // "What do you need" options → project_type values (kept aligned with the DB enum).
 const NEED_OPTIONS = [
   { value: "website", label: "Website" },
-  { value: "erp", label: "ERP / business software" },
-  { value: "hr", label: "HR system" },
-  { value: "other", label: "Something else" },
+  { value: "other", label: "Custom software" },
 ] as const;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -119,7 +117,8 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
       service_id: fd.get("service_id"),
       project_type: fd.get("project_type"),
       budget_range: fd.get("budget_range"),
-      timeline_needed: fd.get("timeline_needed"),
+      // Field was removed from the form — fd.get() returns null, which fails the enum union.
+      timeline_needed: String(fd.get("timeline_needed") ?? ""),
       project_description: fd.get("project_description"),
       reference_links: [],
       start_time_utc: new Date().toISOString(),
@@ -226,7 +225,7 @@ export function BookingFlow({ services, ownerName }: { services: Services; owner
 
         <section className={cn("space-y-5", step !== 1 && "hidden")} aria-hidden={step !== 1}>
           <h2 className="text-xl font-semibold text-ink">Tell me about your project</h2>
-          <input type="hidden" name="service_id" value={preselected} />
+          <input type="hidden" name="service_id" defaultValue={preselected} />
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Your name" name="client_name" error={errors.client_name}>
               <input id="client_name" name="client_name" className="field-public" autoComplete="name" aria-invalid={!!errors.client_name} />
