@@ -42,6 +42,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Timestamps from Supabase arrive as `+00:00`; normalise with `new Date(x).toISOString()` before comparing/sending to the client.
 - Public forms use the `field-public` utility; `/manage-booking` is `force-dynamic`.
 
+## Contacts (leads)
+- Table `contacts` with `source` = `form` (gift-page signup via `POST /api/lp/subscribe`, service role, honeypot + timing + IP/email rate limits) or `manual` (added in `/admin/contacts`). Source never changes on edit.
+- Public form: `src/components/site/lead-form.tsx`; server logic + gift email in `src/lib/leads.ts` (private PDF link signed for 7 days). Hostinger Reach is no longer used on gift pages (the `form_embed` column is kept but empty); the Reach script in `app/layout.tsx` is still needed by `/webinar`.
+
 ## Supabase
 - Project ref: `utaiwlvayzigaxaargww`. Apply schema changes with:
   `npx supabase@2.119.0 db query --linked --project-ref utaiwlvayzigaxaargww -f supabase/schema.sql`

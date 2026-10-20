@@ -327,6 +327,24 @@ export type LandingPageEventRow = {
   created_at: string;
 };
 
+export type ContactSource = "form" | "manual";
+
+export type ContactRow = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  source: ContactSource;
+  page_id: string | null;
+  page_slug: string;
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type DashboardStateRow = {
   key: string;
   value: Json;
@@ -403,6 +421,7 @@ export type Database = {
         "page_id" | "kind",
         "id" | "created_at"
       >;
+      contacts: Table<ContactRow, "email", "id">;
     };
     Views: { [_ in never]: never };
     Functions: {

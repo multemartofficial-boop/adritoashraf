@@ -16,6 +16,7 @@ import {
   Settings,
   ShieldCheck,
   UserRound,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -33,6 +34,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Overview", href: "/admin", icon: LayoutDashboard },
       { label: "Projects", href: "/admin/projects", icon: FolderKanban },
       { label: "Gift Pages", href: "/admin/landing-pages", icon: Gift },
+      { label: "Contacts", href: "/admin/contacts", icon: Users },
       { label: "Services", href: "/admin/services", icon: Briefcase },
       {
         label: "Testimonials",

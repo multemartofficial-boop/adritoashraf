@@ -13,9 +13,9 @@ import {
   getPublishedLandingPageSlugs,
   getSiteSettings,
 } from "@/lib/data/public";
-import { reachFormId } from "@/lib/landing-page-shared";
 import { FitImage } from "@/components/ui/fit-image";
 import { LpTracker } from "@/components/site/lp-tracker";
+import { LeadForm } from "@/components/site/lead-form";
 
 export const revalidate = 3600;
 
@@ -69,7 +69,6 @@ export default async function LandingPage({ params }: PageProps<"/[slug]">) {
     getSiteSettings(),
     getAboutMe(),
   ]);
-  const formId = reachFormId(page.form_embed);
   const stats = settings.about_stats.slice(0, 2);
   const accent = page.heading?.accent ?? "";
   const accentTail = accent.split(" ").pop() ?? "";
@@ -183,23 +182,17 @@ export default async function LandingPage({ params }: PageProps<"/[slug]">) {
               </div>
 
               {/* Form card */}
-              <div className="rounded-3xl border border-white/10 bg-[linear-gradient(160deg,rgb(124_77_255/0.10),rgb(255_255_255/0.03)_55%)] p-6 pt-10 shadow-[0_24px_70px_rgb(124_77_255/0.18)] md:p-8">
+              <div className="relative rounded-3xl border border-white/10 bg-[linear-gradient(160deg,rgb(124_77_255/0.10),rgb(255_255_255/0.03)_55%)] p-6 pt-10 shadow-[0_24px_70px_rgb(124_77_255/0.18)] md:p-8">
                 {page.cta_label && (
                   <p className="mb-4 flex items-center gap-2 text-base font-semibold">
                     <BadgeCheck className="size-5 shrink-0 text-violet" />{" "}
                     {page.cta_label}
                   </p>
                 )}
-                {formId ? (
-                  <div
-                    className="min-h-[460px] w-full min-w-0 overflow-hidden rounded-xl [&_iframe]:w-full [&_iframe]:min-w-0"
-                    data-reach-form={formId}
-                  />
-                ) : (
-                  <div className="grid min-h-[200px] place-items-center text-sm text-white/40">
-                    Registration form coming soon.
-                  </div>
-                )}
+                <LeadForm
+                  slug={page.slug}
+                  buttonLabel={page.cta_label || "Send me the free gift"}
+                />
                 {page.privacy_line && (
                   <p className="mt-4 text-sm text-zinc-400">
                     {page.privacy_line}

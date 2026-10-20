@@ -152,22 +152,13 @@ export function LpForm({ page }: { page?: LandingPageRow }) {
 
       <FormSection
         title="Signup form"
-        description="Paste the Hostinger Reach embed snippet (or just the form ID). The form's own button text + redirect to /your-slug/thank-you are set inside Hostinger Reach."
+        description="Built-in name + email form. Submissions land in Contacts (source: Form), the visitor is sent to /your-slug/thank-you and gets the gift link by email."
       >
         <Field label="Form button / heading text" htmlFor="cta_label" error={errors.cta_label}>
           <Input id="cta_label" name="cta_label" defaultValue={d.cta_label} placeholder="Send me the free checklist" />
         </Field>
         <Field label="Privacy line" htmlFor="privacy_line" error={errors.privacy_line}>
           <Input id="privacy_line" name="privacy_line" defaultValue={d.privacy_line} placeholder="No spam. Unsubscribe anytime." />
-        </Field>
-        <Field
-          label="Reach form embed code"
-          htmlFor="form_embed"
-          error={errors.form_embed}
-          hint='Paste the full snippet like <div data-reach-form="your-id"></div> — or just the form ID.'
-          className="md:col-span-2"
-        >
-          <Textarea id="form_embed" name="form_embed" rows={3} defaultValue={d.form_embed} placeholder='<div data-reach-form="xxxxxxxx-…"></div>' />
         </Field>
       </FormSection>
 

@@ -1,15 +1,6 @@
 import type { LandingPageInput } from "@/lib/validators/landing-page";
 import type { GiftType } from "@/types/database";
 
-/** Pulls the Reach form UUID out of a pasted embed snippet, or accepts the bare id. */
-export function reachFormId(embed: string): string {
-  const trimmed = embed.trim();
-  const match =
-    trimmed.match(/data-reach-form="([0-9a-f-]{36})"/i) ??
-    trimmed.match(/^([0-9a-f-]{36})$/i);
-  return match?.[1] ?? "";
-}
-
 export const GIFT_LABELS: Record<GiftType, string> = {
   pdf: "Download PDF",
   video: "Watch tutorial",
@@ -42,7 +33,7 @@ export const LP_TEMPLATE: LandingPageInput = {
   cover_tag: "100% Free",
   cta_label: "Send me the free checklist",
   privacy_line: "No spam. Unsubscribe anytime.",
-  form_embed: '<div data-reach-form="edffe081-f6fd-43c7-be0a-d688a5b6962b"></div>',
+  form_embed: "",
   gift_type: "pdf",
   gift_file: "",
   gift_url: "",

@@ -1193,3 +1193,39 @@ create policy "landing_page_events admin read" on public.landing_page_events
 drop trigger if exists landing_pages_updated_at on public.landing_pages;
 create trigger landing_pages_updated_at before update on public.landing_pages
   for each row execute function public.set_updated_at();
+
+-- =============================================================================
+-- CONTACTS (leads)
+--   * source = 'form'   -> submitted through a gift-page signup form (/api/lp/subscribe, service role)
+--   * source = 'manual' -> added by the admin from /admin/contacts
+-- =============================================================================
+create table if not exists public.contacts (
+  id           uuid primary key default gen_random_uuid(),
+  name         text not null default '',
+  email        text not null unique check (email = lower(email)),
+  phone        text not null default '',
+  source       text not null default 'manual' check (source in ('form','manual')),
+  page_id      uuid references public.landing_pages (id) on delete set null,
+  page_slug    text not null default '',                    -- kept even if the page is deleted
+  utm_source   text not null default '',
+  utm_medium   text not null default '',
+  utm_campaign text not null default '',
+  notes        text not null default '',
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+create index if not exists contacts_source_idx on public.contacts (source, created_at desc);
+create index if not exists contacts_page_idx on public.contacts (page_id);
+
+alter table public.contacts enable row level security;
+
+drop policy if exists "contacts admin all" on public.contacts;
+create policy "contacts admin all" on public.contacts
+  for all to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+drop trigger if exists contacts_updated_at on public.contacts;
+create trigger contacts_updated_at before update on public.contacts
+  for each row execute function public.set_updated_at();

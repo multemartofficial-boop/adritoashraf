@@ -47,7 +47,7 @@ export default async function LandingPagesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Gift Pages"
-        description="Free-gift landing pages (lead magnets). Each one captures leads via a Hostinger Reach form and delivers the gift on its thank-you page."
+        description="Free-gift landing pages (lead magnets). Each one captures leads with its built-in signup form (see Contacts) and delivers the gift on its thank-you page."
         actions={
           <Button asChild>
             <Link href="/admin/landing-pages/new">
