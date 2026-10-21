@@ -126,8 +126,10 @@ export async function POST(request: Request) {
     } catch (e) {
       console.error("[booking contact]", e);
     }
-    if (row.email) {
-      await sendBookingEmail(isConfirmed ? "booking_confirmed_client" : "booking_received_client", row, { manageToken });
+    // Client emails go out only on confirmation — for pending bookings the
+    // admin-confirm action sends booking_confirmed_client instead.
+    if (row.email && isConfirmed) {
+      await sendBookingEmail("booking_confirmed_client", row, { manageToken });
     }
     await sendBookingEmail("booking_admin_notification", row);
   });

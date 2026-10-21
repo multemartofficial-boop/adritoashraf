@@ -1,96 +1,171 @@
-import { getImageProps } from "next/image";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Code2, Layers3, Sparkles, Zap } from "lucide-react";
 import type { SiteSettingsRow } from "@/types/database";
-import { HERO_IMAGE } from "@/lib/site-config";
-import { site } from "@/config/site";
 
-function HeroBackground() {
-  const common = { alt: "", sizes: "100vw", priority: true } as const;
-  const { props: desktop } = getImageProps({ ...common, src: HERO_IMAGE.desktop, width: 2400, height: 1351 });
-  const { props: mobile } = getImageProps({ ...common, src: HERO_IMAGE.mobile, width: 1080, height: 608 });
-  return (
-    <picture>
-      <source media="(min-width: 768px)" srcSet={desktop.srcSet ?? desktop.src} />
-      <source media="(max-width: 767px)" srcSet={mobile.srcSet ?? mobile.src} />
-      {/* eslint-disable-next-line jsx-a11y/alt-text */}
-      <img {...desktop} className="absolute inset-0 size-full object-cover object-[70%_center] md:object-right" />
-    </picture>
-  );
-}
+const WORKSPACE_LINES = [
+  { label: "architecture", value: "clean systems, clear scope" },
+  { label: "delivery", value: "fast builds with production polish" },
+  { label: "focus", value: "SaaS • ERP • Web apps" },
+] as const;
 
 export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
   return (
-    <section id="home" aria-label="Introduction" className="relative isolate flex min-h-svh flex-col overflow-hidden bg-ink text-white">
-      <HeroBackground />
-      {/* Darken the left side so the headline always stays readable over the artwork. */}
-      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,#0b0b12_0%,rgb(11_11_18/0.85)_35%,rgb(11_11_18/0.2)_70%,transparent_100%)]" />
-      <div aria-hidden className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
+    <section
+      id="home"
+      aria-label="Introduction"
+      className="relative isolate overflow-hidden bg-[#060610] text-white"
+    >
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(70%_55%_at_50%_0%,rgb(123_79_255/0.28),transparent_65%),radial-gradient(50%_50%_at_85%_18%,rgb(244_166_200/0.18),transparent_55%),linear-gradient(180deg,#060610_0%,#090912_60%,#060610_100%)]"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-45 [background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:96px_96px]"
+      />
+      <div aria-hidden className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#060610] to-transparent" />
 
-      <div className="section-x relative flex flex-1 flex-col justify-center pt-32 pb-10 md:pt-36">
-        <div className="max-w-[min(100%,68rem)]">
-          <p className="animate-reveal font-serif text-[clamp(1.75rem,3.4vw,3.25rem)] leading-none italic">{s.hero_intro}</p>
-          <h1 className="mt-3 font-extrabold tracking-tight uppercase">
+      <div className="section-x relative grid min-h-svh items-center gap-14 py-28 lg:grid-cols-[1.05fr_0.95fr] lg:py-36">
+        <div className="max-w-3xl">
+          <div className="animate-reveal inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-4 py-1.5 text-sm font-semibold text-emerald-300 shadow-[0_0_30px_rgb(16_185_129/0.18)]">
+            <span className="relative flex size-2.5">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400/70" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-emerald-400" />
+            </span>
+            Available for Q4 Projects
+          </div>
+
+          <p className="animate-reveal mt-6 font-serif text-[clamp(1.75rem,3.6vw,3.5rem)] leading-none font-normal italic text-white/80" style={{ animationDelay: "120ms" }}>
+            {s.hero_intro}
+          </p>
+
+          <h1 className="mt-4 font-extrabold tracking-tight uppercase">
             <span
-              className="animate-reveal text-gradient-lavender block text-[clamp(1.8rem,8vw,8rem)] leading-[0.92]"
-              style={{ animationDelay: "120ms" }}
+              className="animate-reveal block text-[clamp(2.75rem,8.5vw,8.5rem)] leading-[0.88] text-gradient-lavender"
+              style={{ animationDelay: "180ms" }}
             >
               {s.hero_line_1}
             </span>
-            <span className="animate-reveal mt-2 flex items-center gap-2 sm:gap-3 md:gap-5" style={{ animationDelay: "240ms" }}>
-              <a
-                href="#about"
-                aria-label="Scroll to the About section"
-                className="bg-orange-pill group/pill inline-grid h-[clamp(2rem,4.8vw,5.5rem)] w-[clamp(3.4rem,9.5vw,11rem)] shrink-0 place-items-center rounded-full shadow-[0_10px_40px_rgb(242_107_58/0.35)] transition-all duration-300 ease-out hover:scale-[1.06] hover:shadow-[0_14px_50px_rgb(244_166_200/0.5)] focus-visible:outline-2 focus-visible:outline-white active:scale-95"
-              >
-                <ArrowRight className="size-[45%] stroke-[2.5] transition-transform duration-300 ease-out group-hover/pill:translate-x-1" />
-              </a>
-              <span className="text-gradient-peach min-w-0 text-[clamp(1.8rem,8vw,8rem)] leading-[0.92] whitespace-nowrap">{s.hero_line_2}</span>
+            <span
+              className="animate-reveal mt-2 block text-[clamp(2.75rem,8.5vw,8.5rem)] leading-[0.88] text-gradient-peach"
+              style={{ animationDelay: "280ms" }}
+            >
+              {s.hero_line_2}
             </span>
           </h1>
+
           {s.tagline && (
-            <p className="animate-reveal mt-8 max-w-lg text-base leading-relaxed text-white/70 md:text-lg" style={{ animationDelay: "360ms" }}>
+            <p
+              className="animate-reveal mt-7 max-w-2xl text-base leading-relaxed text-white/68 md:text-lg"
+              style={{ animationDelay: "380ms" }}
+            >
               {s.tagline}
             </p>
           )}
-          <div className="animate-reveal mt-8 flex flex-wrap items-center gap-4" style={{ animationDelay: "440ms" }}>
+
+          <div className="animate-reveal mt-8 flex flex-wrap items-center gap-4" style={{ animationDelay: "460ms" }}>
             <a
               href="#book"
-              className="bg-cta inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white shadow-[0_10px_30px_rgb(123_79_255/0.4)] transition-transform duration-300 hover:scale-[1.03]"
+              className="group inline-flex items-center gap-3 rounded-full bg-[linear-gradient(135deg,#7b4fff_0%,#b44cff_55%,#f7b6a0_100%)] px-7 py-3.5 text-sm font-bold text-white shadow-[0_18px_40px_rgb(123_79_255/0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_60px_rgb(123_79_255/0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
             >
               Book a Free 15-Min Call
-              <ArrowRight className="size-4" aria-hidden />
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
             </a>
             <a
               href="#portfolio"
-              className="text-sm font-semibold text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
+              className="group inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white/85 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
             >
-              See my work
+              See My Work
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
             </a>
           </div>
-          <p className="animate-reveal mt-4 max-w-md text-xs leading-relaxed text-white/50" style={{ animationDelay: "520ms" }}>
+
+          <p className="animate-reveal mt-4 max-w-md text-xs leading-relaxed text-white/48" style={{ animationDelay: "540ms" }}>
             No obligation. You get a clear plan, timeline and estimated price after the call.
           </p>
         </div>
-      </div>
 
-      <div className="relative pb-8 md:pb-10">
-        <div className="section-x" aria-label="Why clients trust me">
-          <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/10 pt-6 text-sm text-white/75 md:text-base">
-            {["4+ production systems delivered", "100% source code handover", "Fixed price, no surprises"].map((item) => (
-              <li key={item} className="flex items-center gap-2.5">
-                <span className="bg-orange-pill grid size-5 shrink-0 place-items-center rounded-full text-white">
-                  <Check className="size-3" strokeWidth={3} aria-hidden />
-                </span>
-                {item}
-              </li>
-            ))}
-            {site.clientLogos.map((l) => (
-              <li key={l.src} className="flex items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={l.src} alt={l.alt} className="h-7 w-auto opacity-80" />
-              </li>
-            ))}
-          </ul>
+        <div className="relative lg:pl-6">
+          <div aria-hidden className="absolute inset-0 -z-10 translate-x-8 translate-y-8 rounded-full bg-violet/30 blur-3xl" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-4 shadow-[0_30px_80px_rgb(0_0_0/0.35)] backdrop-blur-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 px-1 pb-4">
+              <div className="flex items-center gap-1.5" aria-hidden>
+                <span className="size-3 rounded-full bg-white/20" />
+                <span className="size-3 rounded-full bg-violet/70" />
+                <span className="size-3 rounded-full bg-orange/70" />
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60">
+                <Code2 className="size-3.5" aria-hidden />
+                Developer workstation
+              </span>
+            </div>
+
+            <div className="grid gap-4 p-4 md:grid-cols-[1.08fr_0.92fr]">
+              <div className="relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.05),rgba(123,79,255,0.08))] p-5">
+                <div className="absolute inset-0 bg-[radial-gradient(60%_70%_at_80%_20%,rgb(244_166_200/0.18),transparent_55%)]" />
+                <div className="relative flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-white/45">Shipping stack</p>
+                    <p className="mt-1 text-lg font-semibold">SaaS • ERP • Web Apps</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+                    <Sparkles className="size-3.5" aria-hidden />
+                    Live
+                  </span>
+                </div>
+
+                <div className="relative mt-6 space-y-3 font-mono text-[0.82rem] leading-7 text-white/75">
+                  <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+                    <span className="text-violet-300">const</span> <span className="text-orange">product</span> = <span className="text-lavender">"high-ticket software"</span>;
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <span className="text-violet-300">const</span> <span className="text-orange">delivery</span> = [<span className="text-lavender">"clean UI"</span>, <span className="text-lavender">"fast build"</span>, <span className="text-lavender">"clear handover"</span>];
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <span className="text-violet-300">return</span> <span className="text-lavender">"premium, scalable, conversion-ready"</span>;
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4">
+                <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <Zap className="size-4 text-orange" aria-hidden />
+                    Built for serious clients
+                  </div>
+                  <ul className="mt-4 space-y-3 text-sm text-white/70">
+                    <li className="flex gap-2.5">
+                      <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
+                      Clear scoping for SaaS, ERP, and internal tools
+                    </li>
+                    <li className="flex gap-2.5">
+                      <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
+                      High-end UI, smooth micro-interactions, and fast delivery
+                    </li>
+                    <li className="flex gap-2.5">
+                      <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
+                      Full source code, handover, and post-launch support
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="grid gap-3 rounded-[1.5rem] border border-white/10 bg-[linear-gradient(160deg,rgba(123,79,255,0.14),rgba(247,182,160,0.09))] p-5 backdrop-blur-xl">
+                  {WORKSPACE_LINES.map((item) => (
+                    <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.22em] text-white/45">{item.label}</p>
+                        <p className="mt-1 text-sm font-semibold text-white/88">{item.value}</p>
+                      </div>
+                      <Layers3 className="size-4 shrink-0 text-white/40" aria-hidden />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute top-6 right-6 hidden rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-300 lg:inline-flex">
+              🟢 Available for Q4 Projects
+            </div>
+          </div>
         </div>
       </div>
     </section>

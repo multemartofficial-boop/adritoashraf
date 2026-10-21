@@ -20,41 +20,54 @@ function Stars({ rating }: { rating: number }) {
 
 function Avatar({ t }: { t: TestimonialRow }) {
   return (
-    <span className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-violet to-orange font-semibold text-white">
+    <span className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-full border border-white/60 bg-gradient-to-br from-violet to-orange font-semibold text-white shadow-[0_10px_25px_rgb(11_11_18/0.18)]">
       {t.avatar_url ? <Image src={t.avatar_url} alt={t.client_name} fill sizes="44px" className="object-cover" /> : t.client_name.charAt(0)}
+    </span>
+  );
+}
+
+function CompanyBadge({ url, name }: { url?: string; name: string }) {
+  if (!url) return null;
+  return (
+    <span className="inline-flex items-center rounded-full border border-white/70 bg-white/80 px-3 py-1 shadow-sm">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={url} alt="" className="h-6 w-auto max-w-20 object-contain" />
+      <span className="sr-only">{name}</span>
     </span>
   );
 }
 
 function TextCard({ t }: { t: TestimonialRow }) {
   return (
-    <figure className="relative flex h-full min-h-72 flex-col rounded-[1.75rem] bg-[linear-gradient(150deg,#efe8ff_0%,#fbe3ef_55%,#ffe9dd_100%)] p-6">
-      <Quote className="absolute top-5 right-5 size-9 text-white/90 drop-shadow" aria-hidden />
-      <figcaption className="flex items-center gap-3">
+    <figure className="relative flex h-full min-h-72 flex-col overflow-hidden rounded-[1.75rem] border border-white/70 bg-[linear-gradient(155deg,rgba(255,255,255,0.9),rgba(239,232,255,0.82)_45%,rgba(251,227,239,0.72)_100%)] p-6 shadow-[0_20px_50px_rgb(11_11_18/0.08)] backdrop-blur-xl">
+      <Quote className="absolute top-5 right-5 size-9 text-white/85 drop-shadow" aria-hidden />
+      <figcaption className="flex items-start gap-3">
         <Avatar t={t} />
         <span className="min-w-0">
-          <span className="block text-sm font-semibold">{t.client_name}</span>
+          <span className="block text-sm font-semibold text-ink">{t.client_name}</span>
           {t.client_role && <span className="block text-xs text-neutral-600">{t.client_role}</span>}
+          <span className="mt-1 inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-medium text-neutral-600 shadow-sm">Verified client</span>
         </span>
-        {t.company_logo_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={t.company_logo_url} alt="" className="ml-auto h-8 w-auto max-w-20 object-contain" />
-        )}
+        <div className="ml-auto">
+          <CompanyBadge url={t.company_logo_url} name={t.client_name} />
+        </div>
       </figcaption>
-      {t.result && <p className="mt-4 text-sm font-bold text-orange">{t.result}</p>}
+      {t.result && <p className="mt-4 inline-flex w-fit rounded-full bg-ink px-3 py-1 text-xs font-semibold tracking-wide text-white">{t.result}</p>}
       <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-neutral-700">“{t.content}”</blockquote>
       {t.screenshot_url && (
         <a
           href={t.link_url || t.screenshot_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative mt-4 block aspect-video overflow-hidden rounded-xl border border-white/60"
+          className="relative mt-4 block aspect-video overflow-hidden rounded-xl border border-white/70 shadow-[0_12px_30px_rgb(11_11_18/0.08)]"
         >
           <Image src={t.screenshot_url} alt={`Proof for ${t.client_name}'s review`} fill sizes="33vw" className="object-cover" />
+          <span className="absolute right-3 bottom-3 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white/90 backdrop-blur-sm">Proof</span>
         </a>
       )}
-      <div className="mt-5">
+      <div className="mt-5 flex items-center justify-between gap-3">
         <Stars rating={t.rating} />
+        {t.company_logo_url && <CompanyBadge url={t.company_logo_url} name={t.client_name} />}
       </div>
     </figure>
   );
@@ -63,21 +76,25 @@ function TextCard({ t }: { t: TestimonialRow }) {
 function VideoCard({ t, onPlay }: { t: TestimonialRow; onPlay: () => void }) {
   const img = t.poster_url || t.avatar_url;
   return (
-    <figure className="relative h-full min-h-72 overflow-hidden rounded-[1.75rem] bg-ink">
-      {img && <Image src={img} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover" />}
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-      <figcaption className="absolute bottom-5 left-5 text-white">
-        <span className="block font-semibold">{t.client_name}</span>
-        {t.client_role && <span className="block text-xs text-white/75">{t.client_role}</span>}
+    <figure className="relative h-full min-h-72 overflow-hidden rounded-[1.75rem] border border-white/15 bg-[#0b0b12] text-white shadow-[0_24px_70px_rgb(0_0_0/0.35)]">
+      {img && <Image src={img} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover opacity-92" />}
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(50%_60%_at_50%_15%,rgb(123_79_255/0.22),transparent_55%),linear-gradient(180deg,transparent_25%,rgb(0_0_0/0.72)_100%)]" />
+      <figcaption className="absolute inset-x-5 bottom-5 flex items-end gap-3">
+        <span className="min-w-0 flex-1">
+          <span className="block font-semibold">{t.client_name}</span>
+          {t.client_role && <span className="block text-xs text-white/72">{t.client_role}</span>}
+        </span>
+        <CompanyBadge url={t.company_logo_url} name={t.client_name} />
       </figcaption>
       <button
         type="button"
         onClick={onPlay}
-        className="bg-cta absolute right-5 bottom-5 grid size-12 place-items-center rounded-full text-white shadow-lg transition-transform duration-200 hover:scale-110"
+        className="bg-cta absolute right-5 bottom-5 grid size-12 place-items-center rounded-full text-white shadow-[0_10px_30px_rgb(123_79_255/0.35)] transition-transform duration-200 hover:scale-110"
         aria-label={`Play video review from ${t.client_name}`}
       >
         <Play className="ml-0.5 size-5 fill-current" />
       </button>
+      {t.result && <span className="absolute top-5 left-5 rounded-full bg-black/55 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/90 backdrop-blur-sm">{t.result}</span>}
     </figure>
   );
 }

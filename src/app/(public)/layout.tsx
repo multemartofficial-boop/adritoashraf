@@ -4,6 +4,7 @@ import { publicEnv } from "@/lib/env/public";
 import { Footer } from "@/components/site/footer";
 import Header from "@/components/site/header";
 import { JsonLd } from "@/components/site/json-ld";
+import { BookingWidgetProvider } from "@/components/site/booking-widget";
 import { WhatsAppFloat } from "@/components/site/whatsapp-float";
 import { TrackEvents } from "@/components/site/track-events";
 import { projectCardVisible, site } from "@/config/site";
@@ -118,19 +119,21 @@ export default async function PublicLayout({
       >
         Skip to content
       </a>
-      <Header
-        logo="/logo.png"
-        siteName={settings.site_name}
-        nav={settings.nav_links}
-        cta={{
-          label: settings.header_cta_label,
-          href: settings.header_cta_href,
-        }}
-      />
-      <main id="main">{children}</main>
-      <Footer settings={settings} projects={projects} />
-      <WhatsAppFloat />
-      <TrackEvents />
+      <BookingWidgetProvider>
+        <Header
+          logo="/logo.png"
+          siteName={settings.site_name}
+          nav={settings.nav_links}
+          cta={{
+            label: settings.header_cta_label,
+            href: settings.header_cta_href,
+          }}
+        />
+        <main id="main">{children}</main>
+        <Footer settings={settings} projects={projects} />
+        <WhatsAppFloat />
+        <TrackEvents />
+      </BookingWidgetProvider>
     </>
   );
 }

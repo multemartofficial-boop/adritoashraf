@@ -366,8 +366,8 @@ function Confirmed({ data, timezone, ownerName }: { data: Confirmation; timezone
       <h2 className="mt-6 text-2xl font-bold text-ink md:text-3xl">ধন্যবাদ!</h2>
       <p className="mt-3 text-neutral-600">
         {confirmed
-          ? `Your meeting is confirmed — ${site.responseTimeHours} ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করব। The details and Google Meet link are on their way to your inbox.`
-          : `${site.responseTimeHours} ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করব। ${ownerName} will confirm your slot shortly — check your inbox for the details.`}
+          ? `Your booking is confirmed — ${site.responseTimeHours} ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করব।`
+          : `${site.responseTimeHours} ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করব। ${ownerName} will confirm your slot shortly.`}
       </p>
       <div className="bg-holo mt-8 rounded-2xl p-5 text-left">
         <p className="text-xs tracking-wide text-neutral-600 uppercase">Reference</p>

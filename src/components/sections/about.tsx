@@ -3,6 +3,7 @@ import { Quote, Sparkles } from "lucide-react";
 import type { SiteSettingsRow, TestimonialRow } from "@/types/database";
 import { HERO_IMAGE } from "@/lib/site-config";
 import { site } from "@/config/site";
+import { CountUp } from "@/components/site/count-up";
 import { SectionTag, TriHeading } from "@/components/site/section-heading";
 
 export function About({ settings: s, featured }: { settings: SiteSettingsRow; featured?: TestimonialRow }) {
@@ -38,7 +39,9 @@ export function About({ settings: s, featured }: { settings: SiteSettingsRow; fe
               <span className="bg-orange-pill grid size-11 place-items-center rounded-xl text-white transition-transform duration-300 ease-out group-hover:scale-110">
                 <Sparkles className="size-5" />
               </span>
-              <p className="mt-5 text-5xl font-bold tracking-tight">{a.value}</p>
+              <p className="mt-5 text-5xl font-bold tracking-tight tabular-nums">
+                <CountUp value={a.value} />
+              </p>
               <p className="mt-2 max-w-60 text-sm text-neutral-700">{a.label}</p>
               <div aria-hidden className="bg-holo absolute inset-x-0 bottom-0 h-2/5 opacity-90 [mask-image:linear-gradient(to_top,#000_40%,transparent)]" />
             </article>
@@ -54,14 +57,18 @@ export function About({ settings: s, featured }: { settings: SiteSettingsRow; fe
                     ))}
                   </div>
                   <p className="mt-6">
-                    <span className="text-3xl font-bold">{b.value}</span>
+                    <span className="text-3xl font-bold tabular-nums">
+                      <CountUp value={b.value} />
+                    </span>
                     <span className="mt-1 block text-sm text-white/75">{b.label}</span>
                   </p>
                 </article>
               )}
               {c && (
                 <article className="card-lift scroll-reveal flex items-center gap-4 rounded-[1.75rem] bg-[linear-gradient(120deg,#ffe7dc_0%,#f9c3d8_100%)] p-6 hover:shadow-[0_24px_50px_rgb(244_166_200/0.35)]">
-                  <span className="text-5xl font-bold tracking-tight text-pink-500">{c.value}</span>
+                  <span className="text-5xl font-bold tracking-tight text-pink-500 tabular-nums">
+                    <CountUp value={c.value} />
+                  </span>
                   <span className="text-sm text-neutral-700">
                     {c.label}
                     <span className="mt-1 block text-xs text-neutral-500">{site.resultsCaption || "Based on client feedback"}</span>
