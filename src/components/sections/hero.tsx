@@ -34,19 +34,19 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
             Available for Q4 Projects
           </div>
 
-          <p className="animate-reveal mt-6 font-serif text-[clamp(1.75rem,3.6vw,3.5rem)] leading-none font-normal italic text-white/80" style={{ animationDelay: "120ms" }}>
+          <p className="animate-reveal mt-6 font-serif text-[clamp(1.5rem,2.6vw,2.5rem)] leading-none font-normal italic text-white/80" style={{ animationDelay: "120ms" }}>
             {s.hero_intro}
           </p>
 
-          <h1 className="mt-4 font-extrabold tracking-tight uppercase">
+          <h1 className="mt-4 font-extrabold tracking-tight uppercase text-balance">
             <span
-              className="animate-reveal block text-[clamp(2.75rem,8.5vw,8.5rem)] leading-[0.88] text-gradient-lavender"
+              className="animate-reveal block text-[clamp(2.5rem,5.6vw,5.75rem)] leading-[0.92] text-gradient-lavender"
               style={{ animationDelay: "180ms" }}
             >
               {s.hero_line_1}
             </span>
             <span
-              className="animate-reveal mt-2 block text-[clamp(2.75rem,8.5vw,8.5rem)] leading-[0.88] text-gradient-peach"
+              className="animate-reveal mt-1 block text-[clamp(2.5rem,5.6vw,5.75rem)] leading-[0.92] text-gradient-peach"
               style={{ animationDelay: "280ms" }}
             >
               {s.hero_line_2}
@@ -93,10 +93,16 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
                 <span className="size-3 rounded-full bg-violet/70" />
                 <span className="size-3 rounded-full bg-orange/70" />
               </div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60">
-                <Code2 className="size-3.5" aria-hidden />
-                Developer workstation
-              </span>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60 whitespace-nowrap">
+                  <Code2 className="size-3.5" aria-hidden />
+                  Developer workstation
+                </span>
+                <span className="hidden items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300 whitespace-nowrap xl:inline-flex">
+                  <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_18px_rgb(74_222_128/0.8)]" />
+                  Available for Q4
+                </span>
+              </div>
             </div>
 
             <div className="space-y-4 p-4 md:p-5">
@@ -166,16 +172,6 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
               </div>
             </div>
 
-            <div className="absolute top-6 right-6 hidden flex-col items-end gap-2 lg:flex">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60 backdrop-blur-xl whitespace-nowrap">
-                <Code2 className="size-3.5" aria-hidden />
-                Developer workstation
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-300 whitespace-nowrap">
-                <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_18px_rgb(74_222_128/0.8)]" />
-                Available for Q4 Projects
-              </span>
-            </div>
           </div>
         </div>
       </div>
