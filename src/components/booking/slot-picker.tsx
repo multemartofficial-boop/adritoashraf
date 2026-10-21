@@ -114,7 +114,7 @@ export function SlotPicker({ timezone, onTimezoneChange, value, onChange, exclud
                     onClick={() => setDay(k)}
                     className={cn(
                       "rounded-xl border px-3 py-2.5 text-left text-sm transition-colors",
-                      selected ? "border-ink bg-ink text-white" : "border-neutral-200 bg-white hover:border-neutral-400",
+                      selected ? "border-ink bg-ink text-white" : "border-neutral-200 bg-white text-ink hover:border-neutral-400",
                     )}
                   >
                     <span className="block font-medium">{fmtLongDate(list[0], timezone).split(",")[0]}</span>
@@ -141,7 +141,7 @@ export function SlotPicker({ timezone, onTimezoneChange, value, onChange, exclud
                     onClick={() => onChange(iso)}
                     className={cn(
                       "rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors",
-                      selected ? "bg-cta border-transparent text-white" : "border-neutral-200 bg-white hover:border-violet",
+                      selected ? "bg-cta border-transparent text-white" : "border-neutral-200 bg-white text-ink hover:border-violet",
                     )}
                   >
                     {fmtTime(iso, timezone)}
