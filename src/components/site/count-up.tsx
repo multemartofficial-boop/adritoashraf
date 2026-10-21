@@ -13,7 +13,7 @@ function splitValue(value: string) {
 export function CountUp({ value, className }: { value: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const parsed = useMemo(() => splitValue(value), [value]);
-  const [display, setDisplay] = useState(value);
+  const [animated, setAnimated] = useState(value);
   const [started, setStarted] = useState(false);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function CountUp({ value, className }: { value: string; className?: strin
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setStarted(true);
+        if (entry.isIntersecting && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) setStarted(true);
       },
       { threshold: 0.45 },
     );
@@ -32,15 +32,7 @@ export function CountUp({ value, className }: { value: string; className?: strin
   }, [parsed]);
 
   useEffect(() => {
-    if (!started || !parsed) {
-      setDisplay(value);
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplay(value);
-      return;
-    }
+    if (!started || !parsed) return;
 
     const integerMode = Number.isInteger(parsed.target);
     const formatter = new Intl.NumberFormat("en-US", {
@@ -57,14 +49,14 @@ export function CountUp({ value, className }: { value: string; className?: strin
       const eased = 1 - Math.pow(1 - progress, 3);
       const next = parsed.target * eased;
       const rendered = integerMode ? Math.round(next) : Number(next.toFixed(1));
-      setDisplay(`${formatter.format(rendered)}${parsed.suffix}`);
+      setAnimated(`${formatter.format(rendered)}${parsed.suffix}`);
       if (progress < 1) raf = requestAnimationFrame(tick);
-      else setDisplay(value);
+      else setAnimated(value);
     };
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [parsed, started, value]);
 
-  return <span ref={ref} className={className} aria-label={value}>{display}</span>;
+  return <span ref={ref} className={className} aria-label={value}>{started && parsed ? animated : value}</span>;
 }

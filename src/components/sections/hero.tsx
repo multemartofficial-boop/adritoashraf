@@ -2,8 +2,8 @@ import { ArrowRight, Check, Code2, Layers3, Sparkles, Zap } from "lucide-react";
 import type { SiteSettingsRow } from "@/types/database";
 
 const WORKSPACE_LINES = [
-  { label: "architecture", value: "clean systems, clear scope" },
-  { label: "delivery", value: "fast builds with production polish" },
+  { label: "architecture", value: "clean systems" },
+  { label: "delivery", value: "fast build cycles" },
   { label: "focus", value: "SaaS • ERP • Web apps" },
 ] as const;
 
@@ -99,66 +99,70 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
               </span>
             </div>
 
-            <div className="grid gap-4 p-4 md:grid-cols-[1.08fr_0.92fr]">
-              <div className="relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.05),rgba(123,79,255,0.08))] p-5">
+            <div className="space-y-4 p-4 md:p-5">
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.06),rgba(123,79,255,0.08))] p-6 md:p-7">
                 <div className="absolute inset-0 bg-[radial-gradient(60%_70%_at_80%_20%,rgb(244_166_200/0.18),transparent_55%)]" />
-                <div className="relative flex items-center justify-between gap-4">
-                  <div>
+                <div className="relative flex items-start justify-between gap-4">
+                  <div className="max-w-[22rem]">
                     <p className="text-xs uppercase tracking-[0.24em] text-white/45">Shipping stack</p>
-                    <p className="mt-1 text-lg font-semibold">SaaS • ERP • Web Apps</p>
+                    <p className="mt-2 text-[clamp(1.5rem,2vw,2.15rem)] leading-tight font-semibold text-white">
+                      Premium software that feels polished from day one
+                    </p>
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/68">
+                      Designed to feel premium, ship fast, and stay clear for founders, operators, and teams.
+                    </p>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+                  <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
                     <Sparkles className="size-3.5" aria-hidden />
                     Live
                   </span>
                 </div>
 
-                <div className="relative mt-6 space-y-3 font-mono text-[0.82rem] leading-7 text-white/75">
-                  <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-                    <span className="text-violet-300">const</span> <span className="text-orange">product</span> = <span className="text-lavender">"high-ticket software"</span>;
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <span className="text-violet-300">const</span> <span className="text-orange">delivery</span> = [<span className="text-lavender">"clean UI"</span>, <span className="text-lavender">"fast build"</span>, <span className="text-lavender">"clear handover"</span>];
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <span className="text-violet-300">return</span> <span className="text-lavender">"premium, scalable, conversion-ready"</span>;
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid gap-4">
-                <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <Zap className="size-4 text-orange" aria-hidden />
-                    Built for serious clients
-                  </div>
-                  <ul className="mt-4 space-y-3 text-sm text-white/70">
-                    <li className="flex gap-2.5">
-                      <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
-                      Clear scoping for SaaS, ERP, and internal tools
-                    </li>
-                    <li className="flex gap-2.5">
-                      <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
-                      High-end UI, smooth micro-interactions, and fast delivery
-                    </li>
-                    <li className="flex gap-2.5">
-                      <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
-                      Full source code, handover, and post-launch support
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="grid gap-3 rounded-[1.5rem] border border-white/10 bg-[linear-gradient(160deg,rgba(123,79,255,0.14),rgba(247,182,160,0.09))] p-5 backdrop-blur-xl">
-                  {WORKSPACE_LINES.map((item) => (
-                    <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-white/45">{item.label}</p>
-                        <p className="mt-1 text-sm font-semibold text-white/88">{item.value}</p>
-                      </div>
-                      <Layers3 className="size-4 shrink-0 text-white/40" aria-hidden />
+                <div className="relative mt-6 grid gap-3 sm:grid-cols-3">
+                  {[
+                    { title: "Plan", value: "Discovery → proposal" },
+                    { title: "Design", value: "Clear UI direction" },
+                    { title: "Delivery", value: "Fast, tested launch" },
+                  ].map((item) => (
+                    <div key={item.title} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-white/45">{item.title}</p>
+                      <p className="mt-1 text-sm font-semibold leading-snug text-white">{item.value}</p>
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                {WORKSPACE_LINES.map((item) => (
+                  <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5">
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-white/45">{item.label}</p>
+                      <p className="mt-1 text-sm font-semibold leading-snug text-white/88">{item.value}</p>
+                    </div>
+                    <Layers3 className="size-4 shrink-0 text-white/40" aria-hidden />
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+                <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <Zap className="size-4 text-orange" aria-hidden />
+                  Built for serious clients
+                </div>
+                <ul className="mt-4 grid gap-3 text-sm text-white/70 md:grid-cols-3">
+                  <li className="flex gap-2.5">
+                    <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
+                    Clear scoping for SaaS, ERP, and internal tools
+                  </li>
+                  <li className="flex gap-2.5">
+                    <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
+                    High-end UI, smooth micro-interactions, and fast delivery
+                  </li>
+                  <li className="flex gap-2.5">
+                    <Check className="mt-0.5 size-4 shrink-0 text-emerald-300" aria-hidden />
+                    Full source code, handover, and post-launch support
+                  </li>
+                </ul>
               </div>
             </div>
 

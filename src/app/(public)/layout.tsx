@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getProjects, getSiteSettings } from "@/lib/data/public";
+import { getProjects, getServices, getSiteSettings } from "@/lib/data/public";
 import { publicEnv } from "@/lib/env/public";
 import { Footer } from "@/components/site/footer";
 import Header from "@/components/site/header";
@@ -51,9 +51,10 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [settings, projects] = await Promise.all([
+  const [settings, projects, services] = await Promise.all([
     getSiteSettings(),
     getProjects().then((all) => all.filter((p) => projectCardVisible(p.slug))),
+    getServices(),
   ]);
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
   const socials = settings.social_links.filter((l) => l.url).map((l) => l.url);
@@ -119,7 +120,7 @@ export default async function PublicLayout({
       >
         Skip to content
       </a>
-      <BookingWidgetProvider>
+      <BookingWidgetProvider services={services} ownerName={settings.owner_name}>
         <Header
           logo="/logo.png"
           siteName={settings.site_name}

@@ -46,7 +46,7 @@ export function Portfolio({
             <li key={p.id} className="scroll-reveal [perspective:1400px]">
               <article
                 className={cn(
-                  "group/card relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-[0_-20px_60px_rgb(0_0_0/0.45)] transition-transform duration-500 ease-out md:grid md:grid-cols-[1fr_1.12fr] md:gap-8 md:p-8 lg:min-h-[70vh] lg:p-10",
+                  "group/card relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-[0_-20px_60px_rgb(0_0_0/0.45)] transition-transform duration-500 ease-out will-change-transform hover:[transform:translateY(-8px)_rotateX(2deg)_rotateY(-2deg)] md:grid md:grid-cols-[1fr_1.12fr] md:gap-8 md:p-8 lg:min-h-[70vh] lg:p-10",
                   theme.bg,
                   theme.dark ? "text-white" : "text-ink",
                 )}
