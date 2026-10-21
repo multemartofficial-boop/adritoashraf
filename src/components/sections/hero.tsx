@@ -166,8 +166,15 @@ export function Hero({ settings: s }: { settings: SiteSettingsRow }) {
               </div>
             </div>
 
-            <div className="absolute top-6 right-6 hidden rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-300 lg:inline-flex">
-              🟢 Available for Q4 Projects
+            <div className="absolute top-6 right-6 hidden flex-col items-end gap-2 lg:flex">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60 backdrop-blur-xl whitespace-nowrap">
+                <Code2 className="size-3.5" aria-hidden />
+                Developer workstation
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-300 whitespace-nowrap">
+                <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_18px_rgb(74_222_128/0.8)]" />
+                Available for Q4 Projects
+              </span>
             </div>
           </div>
         </div>
