@@ -51,6 +51,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           src="https://cdn-reach.hostinger.com/js/embed.js"
           strategy="afterInteractive"
         />
+        <Script
+          src="http://localhost:8080/widget.js"
+          data-key="wk_XHdxmetx76lR5BifUYXtnquy"
+          data-position="right"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
