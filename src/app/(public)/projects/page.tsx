@@ -5,6 +5,7 @@ import { getProjects, getSiteSettings } from "@/lib/data/public";
 import { publicEnv } from "@/lib/env/public";
 import { JsonLd } from "@/components/site/json-ld";
 import { CARD_THEMES } from "@/components/site/card-themes";
+import { ProjectKindBadge, ProjectOriginText } from "@/components/site/project-badge";
 import { FitImage } from "@/components/ui/fit-image";
 import { cn } from "@/lib/utils";
 import { projectCardVisible, site } from "@/config/site";
@@ -28,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProjectsPage() {
   const [projects, settings] = await Promise.all([
-    getProjects().then((all) => all.filter((p) => projectCardVisible(p.slug))),
+    getProjects().then((all) => all.filter((p) => projectCardVisible(p))),
     getSiteSettings(),
   ]);
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;
@@ -126,15 +127,19 @@ export default async function ProjectsPage() {
                     </div>
 
                     <div className="flex flex-1 flex-col p-1 pt-6">
-                      <p
-                        className={cn(
-                          "text-sm font-medium",
-                          theme.dark ? "text-white/60" : "text-neutral-500",
-                        )}
-                      >
-                        {String(i + 1).padStart(2, "0")} /{" "}
-                        {String(projects.length).padStart(2, "0")}
-                      </p>
+                      <div className="flex items-center justify-between gap-3">
+                        <p
+                          className={cn(
+                            "flex items-baseline gap-1.5 text-sm font-medium",
+                            theme.dark ? "text-white/60" : "text-neutral-500",
+                          )}
+                        >
+                          {String(i + 1).padStart(2, "0")} /{" "}
+                          {String(projects.length).padStart(2, "0")}
+                          <ProjectOriginText origin={p.origin} dark={theme.dark} />
+                        </p>
+                        <ProjectKindBadge kind={p.kind} dark={theme.dark} />
+                      </div>
                       <h2 className="mt-3 text-[clamp(1.6rem,3vw,2.5rem)] leading-[1.05] font-bold tracking-tight">
                         {p.title}{" "}
                         {p.title_accent && (

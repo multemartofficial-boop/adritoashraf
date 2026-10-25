@@ -18,6 +18,7 @@ import {
 import { publicEnv } from "@/lib/env/public";
 import { JsonLd } from "@/components/site/json-ld";
 import { CARD_THEMES } from "@/components/site/card-themes";
+import { ProjectKindBadge } from "@/components/site/project-badge";
 import { FitImage } from "@/components/ui/fit-image";
 import { cn } from "@/lib/utils";
 import { site } from "@/config/site";
@@ -153,6 +154,10 @@ export default async function ProjectPage({
         )}
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
+          <ProjectKindBadge kind={project.kind} dark />
+          <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white/60">
+            {project.origin === "practice" ? "Practice project" : "Client work"}
+          </span>
           {meta.map((m) => (
             <span
               key={m.label}

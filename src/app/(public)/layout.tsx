@@ -53,7 +53,7 @@ export default async function PublicLayout({
 }) {
   const [settings, projects, services] = await Promise.all([
     getSiteSettings(),
-    getProjects().then((all) => all.filter((p) => projectCardVisible(p.slug))),
+    getProjects().then((all) => all.filter((p) => projectCardVisible(p))),
     getServices(),
   ]);
   const base = publicEnv.NEXT_PUBLIC_SITE_URL;

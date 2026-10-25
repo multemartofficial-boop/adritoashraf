@@ -12,7 +12,7 @@ export default async function ProjectsPage() {
   const { supabase } = await requireAdmin();
   const { data: projects } = await supabase
     .from("projects")
-    .select("id, title, title_accent, slug, short_description, tags, cover_image, card_theme, is_published")
+    .select("id, title, title_accent, slug, short_description, tags, cover_image, card_theme, kind, origin, is_published")
     .order("sort_order");
 
   return (

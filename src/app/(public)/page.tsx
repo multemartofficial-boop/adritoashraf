@@ -39,7 +39,7 @@ export default async function HomePage() {
     ]);
   const t = settings.section_texts;
   const featured = testimonials.find((x) => x.type === "text" && x.content);
-  const visibleProjects = projects.filter((p) => projectCardVisible(p.slug));
+  const visibleProjects = projects.filter((p) => projectCardVisible(p));
 
   return (
     <>

@@ -53,6 +53,8 @@ export type ProjectCard = Pick<
   | "cover_image_alt"
   | "live_url"
   | "card_theme"
+  | "kind"
+  | "origin"
   | "role"
   | "duration"
   | "noindex"
@@ -63,7 +65,7 @@ export const getProjects = cache(async (): Promise<ProjectCard[]> => {
   const { data, error } = await supabasePublic()
     .from("projects")
     .select(
-      "id, title, title_accent, slug, short_description, tags, cover_image, cover_image_alt, live_url, card_theme, role, duration, noindex, updated_at",
+      "id, title, title_accent, slug, short_description, tags, cover_image, cover_image_alt, live_url, card_theme, kind, origin, role, duration, noindex, updated_at",
     )
     .eq("is_published", true)
     .order("sort_order");

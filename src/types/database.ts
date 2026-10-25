@@ -13,6 +13,8 @@ export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
 export type TestimonialType = "text" | "video";
 export type ProjectType = "website" | "saas" | "erp" | "hr" | "other";
 export type CardTheme = "sky" | "holo" | "aurum" | "peach" | "violet";
+export type ProjectKind = "website" | "saas";
+export type ProjectOrigin = "client" | "practice";
 export type Currency = "USD" | "BDT";
 export type EmailTemplateType =
   | "booking_received_client"
@@ -105,6 +107,8 @@ export type ProjectRow = {
   live_url: string;
   cover_image: string;
   card_theme: CardTheme;
+  kind: ProjectKind;
+  origin: ProjectOrigin;
   seo_title: string;
   seo_description: string;
   focus_keyword: string;

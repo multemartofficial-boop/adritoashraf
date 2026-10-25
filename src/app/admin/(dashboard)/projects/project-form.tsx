@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ProjectRow } from "@/types/database";
+import type { ProjectKind, ProjectOrigin, ProjectRow } from "@/types/database";
 import type { FormState } from "@/lib/forms";
 import { CARD_THEMES, parseProjectForm, slugify } from "@/lib/validators/content";
 import { Field, FormSection, errProps } from "@/components/admin/form/field";
@@ -23,6 +23,8 @@ export function ProjectForm({ action, project }: { action: Action; project?: Pro
   const [slug, setSlug] = useState(project?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(project));
   const [theme, setTheme] = useState(project?.card_theme ?? "sky");
+  const [kind, setKind] = useState<ProjectKind>(project?.kind ?? "website");
+  const [origin, setOrigin] = useState<ProjectOrigin>(project?.origin ?? "client");
 
   return (
     <form action={formAction} onSubmit={onSubmit} noValidate className="space-y-6">
@@ -92,6 +94,50 @@ export function ProjectForm({ action, project }: { action: Action; project?: Pro
         <Field label="Cover image" htmlFor="cover_image" error={errors.cover_image} hint="Shown on the card and as the hover preview. 16:9 works best.">
           <ImageField name="cover_image" folder="projects" defaultValue={project?.cover_image} error={errors.cover_image} />
         </Field>
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium">Project type</legend>
+          <input type="hidden" name="kind" value={kind} />
+          <div className="flex flex-wrap gap-2">
+            {([
+              { v: "website", label: "Website", hint: "Marketing / business site" },
+              { v: "saas", label: "SaaS", hint: "App, dashboard or platform" },
+            ] as const).map((o) => (
+              <label
+                key={o.v}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-xl border border-admin-border bg-white px-3 py-2 text-sm transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-admin-info/30",
+                  kind === o.v && "border-admin-text",
+                )}
+              >
+                <input type="radio" name="kind_choice" value={o.v} checked={kind === o.v} onChange={() => setKind(o.v)} className="sr-only" />
+                <span className={cn("size-2.5 rounded-full", o.v === "saas" ? "bg-violet" : "bg-orange")} />
+                <span className="font-medium">{o.label}</span>
+                <span className="text-xs text-admin-muted">{o.hint}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium">Origin</legend>
+          <input type="hidden" name="origin" value={origin} />
+          <div className="flex flex-wrap gap-2">
+            {([
+              { v: "client", label: "Client work" },
+              { v: "practice", label: "Practice project" },
+            ] as const).map((o) => (
+              <label
+                key={o.v}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-xl border border-admin-border bg-white px-3 py-2 text-sm transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-admin-info/30",
+                  origin === o.v && "border-admin-text",
+                )}
+              >
+                <input type="radio" name="origin_choice" value={o.v} checked={origin === o.v} onChange={() => setOrigin(o.v)} className="sr-only" />
+                {o.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <fieldset className="space-y-2">
           <legend className="text-sm font-medium">Card background</legend>
           <input type="hidden" name="card_theme" value={theme} />

@@ -7,6 +7,7 @@ import { ArrowRight, ArrowUpRight, Eye, X } from "lucide-react";
 import type { SectionText } from "@/types/database";
 import type { ProjectCard } from "@/lib/data/public";
 import { CARD_THEMES } from "@/components/site/card-themes";
+import { ProjectKindBadge, ProjectOriginText } from "@/components/site/project-badge";
 import { FitImage } from "@/components/ui/fit-image";
 import { cn } from "@/lib/utils";
 import { site } from "@/config/site";
@@ -56,9 +57,13 @@ export function Portfolio({
 
                 <div className="relative flex flex-col justify-between gap-8 p-1 md:py-4">
                   <div>
-                    <p className={cn("text-sm font-medium", theme.dark ? "text-white/60" : "text-neutral-500")}>
-                      {String(i + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
-                    </p>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className={cn("flex items-baseline gap-1.5 text-sm font-medium", theme.dark ? "text-white/60" : "text-neutral-500")}>
+                        {String(i + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+                        <ProjectOriginText origin={p.origin} dark={theme.dark} />
+                      </p>
+                      <ProjectKindBadge kind={p.kind} dark={theme.dark} />
+                    </div>
                     <h3 className="mt-4 text-[clamp(2rem,4.2vw,4rem)] leading-[1.05] font-bold tracking-tight">
                       {p.title}{" "}
                       {p.title_accent && <span className="font-serif font-normal italic">{p.title_accent}</span>}

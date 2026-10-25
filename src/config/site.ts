@@ -74,9 +74,10 @@ export const site: SiteConfig = {
   responseTimeHours: 24,
 
   // --- Projects ---
-  // Per-project display flags (keyed by project slug).
-  //   hasImage: false → the card is hidden from listings until a real
-  //     screenshot is uploaded in admin (project #4 currently has none).
+  // Per-project display flags (keyed by project slug). Cards only appear in
+  // listings once a cover image is uploaded in admin — until then the row is
+  // treated as work-in-progress.
+  //   hasImage: false → force-hides the card even with a cover image.
   //   isDemoData: true → a small "Demo data" badge on the screenshot.
   //     TODO: confirm which screenshots are mock/demo (some show £ prices
   //     and a different brand than the testimonial company) — swap the
@@ -85,7 +86,8 @@ export const site: SiteConfig = {
     "cycle-shop-platform": { hasImage: true, isDemoData: false },
     "hr-management-software": { hasImage: true, isDemoData: true },
     "erp-software": { hasImage: true, isDemoData: true },
-    "engineering-construction-website": { hasImage: false, isDemoData: false },
+    // Steelcraft Engineering demo — shows once a cover image is uploaded.
+    "engineering-construction-website": { isDemoData: true },
   } as Record<string, { hasImage?: boolean; isDemoData?: boolean }>,
 
   // --- Case study results (TODO: real numbers per project slug) ---
@@ -93,5 +95,5 @@ export const site: SiteConfig = {
 };
 
 /** A project card is shown in listings only when it has a real image. */
-export const projectCardVisible = (slug: string): boolean =>
-  site.projects[slug]?.hasImage !== false;
+export const projectCardVisible = (p: { slug: string; cover_image: string }): boolean =>
+  Boolean(p.cover_image) && site.projects[p.slug]?.hasImage !== false;

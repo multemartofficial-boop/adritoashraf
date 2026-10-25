@@ -58,6 +58,8 @@ export function slugify(input: string) {
 // Projects
 // ---------------------------------------------------------------------------
 export const CARD_THEMES = ["sky", "holo", "aurum", "peach", "violet"] as const;
+export const PROJECT_KINDS = ["website", "saas"] as const;
+export const PROJECT_ORIGINS = ["client", "practice"] as const;
 
 export const projectSchema = z.object({
   title: required(120, "Title"),
@@ -74,6 +76,8 @@ export const projectSchema = z.object({
   live_url: optionalUrl,
   cover_image: imageUrl,
   card_theme: z.enum(CARD_THEMES),
+  kind: z.enum(PROJECT_KINDS),
+  origin: z.enum(PROJECT_ORIGINS),
   seo_title: text(70),
   seo_description: text(170),
   focus_keyword: text(80),
@@ -101,6 +105,8 @@ export const parseProjectForm = (fd: FormData) =>
     live_url: fdString(fd, "live_url").trim(),
     cover_image: fdString(fd, "cover_image"),
     card_theme: fdString(fd, "card_theme") || "sky",
+    kind: fdString(fd, "kind") || "website",
+    origin: fdString(fd, "origin") || "client",
     seo_title: fdString(fd, "seo_title"),
     seo_description: fdString(fd, "seo_description"),
     focus_keyword: fdString(fd, "focus_keyword"),

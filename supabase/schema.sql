@@ -156,6 +156,10 @@ alter table public.projects add column if not exists cover_image_alt text not nu
 alter table public.projects add column if not exists canonical_url text not null default '';
 alter table public.projects add column if not exists noindex boolean not null default false;
 
+-- Card identity: website vs SaaS badge, and client work vs practice label.
+alter table public.projects add column if not exists kind text not null default 'website' check (kind in ('website', 'saas'));
+alter table public.projects add column if not exists origin text not null default 'client' check (origin in ('client', 'practice'));
+
 create table if not exists public.project_images (
   id          uuid primary key default gen_random_uuid(),
   project_id  uuid not null references public.projects (id) on delete cascade,

@@ -23,6 +23,8 @@ type Item = Pick<
   | "tags"
   | "cover_image"
   | "card_theme"
+  | "kind"
+  | "origin"
   | "is_published"
 >;
 
@@ -87,6 +89,8 @@ export function ProjectsList({ initial }: { initial: Item[] }) {
                   )}
                 </span>
                 {!p.is_published && <Badge>Draft</Badge>}
+                {p.kind === "saas" && <Badge tone="info">SaaS</Badge>}
+                {p.origin === "practice" && <Badge tone="warning">Practice</Badge>}
               </span>
               <span className="block truncate text-xs text-admin-muted">
                 /projects/{p.slug}
